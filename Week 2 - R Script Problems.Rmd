@@ -1,0 +1,190 @@
+---
+title: Foundations of Probability for Finite Sample Spaces
+author: Mathematics for Computation and Data Science
+date: Arnob Roy -- Last Revised on June 24, 2021
+output: pdf_document
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{flushleft}\LARGE \scshape}
+  - \posttitle{\end{flushleft}}
+  
+  - \preauthor{\begin{flushleft}\large}
+  - \postauthor{\end{flushleft}}
+  
+  - \predate{\begin{flushleft}\large}
+  - \postdate{\end{flushleft}}
+---
+
+# R Script Problems
+
+## Problem 1.
+
+```{r}
+Q1 <- c(100,0,0,0)
+Q2 <- c(100,0,0,0)
+
+scores <- expand.grid(Q1, Q2)
+
+scores <- data.frame(scores, rowSums(scores), rowSums(scores)/2, (scores$Var2-scores$Var1)/100+1)
+names(scores) <- c("Q1", "Q2", "Sum", "X", "Y")
+
+scores <- data.frame(scores, scores$X*scores$Y)
+names(scores) <- c("Q1", "Q2", "Sum", "X", "Y", "XY")
+
+expected.X <- sum(scores$X/16)
+expected.Y <- sum(scores$Y/16)
+expected.XY <- sum(scores$XY/16)
+
+expected.XY == expected.X*expected.Y #Uncorrelated
+
+scores <- data.frame(scores, scores$X*scores$X, scores$Y*scores$Y)
+names(scores) <- c("Q1", "Q2", "Sum", "X", "Y", "XY", "Xsquared", "Ysquared")
+scores <- data.frame(scores, scores$Xsquared*scores$Ysquared)
+names(scores) <- c("Q1", "Q2", "Sum", "X", "Y", "XY", "Xsquared", "Ysquared", "XY squared")
+
+expected.Xsq <- sum(scores$Xsquared/16)
+expected.Ysq <- sum(scores$Ysquared/16)
+expected.XY.sq <- sum(scores$`XY squared`/16)
+
+expected.XY.sq == expected.Xsq*expected.Ysq #Not Independent
+
+scores
+```
+
+Since $\mathbb{E}(XY) = \mathbb{E}(X)\mathbb{E}(Y)\to$ $X$ and $Y$ are uncorrelated.
+
+However, $\mathbb{E}(X^2Y^2) \ne \mathbb{E}(X^2)\mathbb{E}(Y^2)\to$ $X$ and $Y$ are not independent.
+
+## Problem 2. Hypergeometric Distribution
+
+
+
+## Problem 3. Permutation Test
+
+After loading the data set containing the birth weights of babies born in North Carolina, we find that the average male baby is 103.2632 ounces heavier than a female baby.
+
+```{r}
+#Load the Data
+NC <- read.csv("NCBirths2004.csv"); head(NC)
+
+#Average Birth Weight of a Male
+idx <- which(NC$Gender == "Male")
+mean(NC$Weight[idx])
+
+#Average Birth Weight of a Female
+idx.female <- which(NC$Gender == "Female")
+mean(NC$Weight[idx.female])
+
+#Difference in birth weight
+mean(NC$Weight[idx])-mean(NC$Weight[idx.female])
+```
+
+**Conducting a Permutation Test** (Inspired by Script 2D, and Chihara and Hesterberg)
+
+```{r}
+#Record our observed difference in the weights
+observed.diff <- mean(NC$Weight[idx])-mean(NC$Weight[idx.female])
+
+#Random Sampling
+sum(NC$Gender == "Male") #488 M
+sum(NC$Gender == "Female") #521 F
+Gender <- sample(NC$Gender); head(Gender)
+sum(Gender == "Female")
+sum(Gender == "Male")
+FemaleAvg <- sum(NC$Weight*(Gender=="Female"))/sum(Gender=="Female"); FemaleAvg
+MaleAvg <- sum(NC$Weight*(Gender=="Male"))/sum(Gender=="Male"); MaleAvg
+MaleAvg - FemaleAvg
+
+#Let's permute this 10^4 times
+N <- 10000
+permuted.diff <- numeric(N)
+
+for(i in 1:N){
+  Gender <- sample(NC$Gender); Gender
+  FemaleAvg <- sum(NC$Weight*(Gender=="Female"))/sum(Gender=="Female")
+  MaleAvg <- sum(NC$Weight*(Gender=="Male"))/sum(Gender=="Male")
+  permuted.diff[i] <- MaleAvg - FemaleAvg
+}
+```
+
+```{r}
+#Average of the Permutation Distribution
+mean(permuted.diff)
+
+#Histogram of the Permutation Distribution
+hist(permuted.diff, breaks = "FD")
+abline(v = observed.diff, col = "red")
+
+#What is the probability that this difference arose from a random subset?
+p <- (sum(permuted.diff >= observed.diff)+1)/(N+1); p
+```
+
+\newpage
+
+## Problem 4. Permutation Test comparing the Difference between Celtiberian Champions and Celtiverian Swordsmen
+
+```{r}
+#Load the Data
+Battles <- read.csv("Battle.csv"); head(Battles)
+
+#Average Kills of MEZU/BRIG
+MEZU <- which(Battles$Abbr == "MEZU"); head(MEZU)
+BRIG <- which(Battles$Abbr == "BRIG"); head(BRIG)
+mean(Battles$Kills[MEZU])
+mean(Battles$Lost[MEZU])
+mean(Battles$Kills[BRIG])
+mean(Battles$Lost[BRIG])
+
+#Difference Kills - Lost for each unit
+observed.mezu <- mean(Battles$Kills[MEZU]) - mean(Battles$Lost[MEZU]); observed.mezu 
+observed.brig <- mean(Battles$Kills[BRIG]) - mean(Battles$Lost[BRIG]); observed.brig
+```
+
+```{r}
+#Random Sampling
+Unit <- sample(Battles$Abbr)
+KillsAvg.MEZU <- sum(Battles$Kills*(Unit == "MEZU"))/sum(Unit == "MEZU"); KillsAvg.MEZU
+LostAvg.MEZU <- sum(Battles$Lost*(Unit == "MEZU"))/sum(Unit == "MEZU"); LostAvg.MEZU
+perform.MEZU <- KillsAvg.MEZU - LostAvg.MEZU; perform.MEZU
+
+#Let's Conduct a Permutation Test for our MEZU unit, based on Kills-Lost, 10^5 times
+N <- 10^5
+diffs.MEZU <- numeric(N)
+for (i in 1:N){
+  Unit <- sample(Battles$Abbr)
+  KillsAvg.MEZU <- sum(Battles$Kills*(Unit == "MEZU"))/sum(Unit == "MEZU")
+  LostAvg.MEZU <- sum(Battles$Lost*(Unit == "MEZU"))/sum(Unit == "MEZU")
+  perform.MEZU[i] <- KillsAvg.MEZU - LostAvg.MEZU; perform.MEZU
+}
+
+Unit <- sample(Battles$Abbr)
+KillsAvg.BRIG <- sum(Battles$Kills*(Unit == "BRIG"))/sum(Unit == "BRIG"); KillsAvg.BRIG
+LostAvg.BRIG <- sum(Battles$Lost*(Unit == "BRIG"))/sum(Unit == "BRIG"); LostAvg.BRIG
+perform.BRIG <- KillsAvg.BRIG - LostAvg.BRIG; perform.BRIG
+
+#Let's Conduct a Permutation Test for our MEZU unit, based on Kills-Lost, 10^5 times
+N <- 10^5
+diffs.BRIG <- numeric(N)
+for (i in 1:N){
+  Unit <- sample(Battles$Abbr)
+  KillsAvg.BRIG <- sum(Battles$Kills*(Unit == "BRIG"))/sum(Unit == "BRIG")
+  LostAvg.BRIG <- sum(Battles$Lost*(Unit == "BRIG"))/sum(Unit == "BRIG")
+  perform.BRIG[i] <- KillsAvg.BRIG - LostAvg.BRIG
+}
+```
+
+```{r}
+mean(perform.MEZU)
+hist(perform.MEZU, breaks = "FD")
+abline(v = observed.mezu, col = "red")
+p.mezu <- (sum(perform.MEZU >= observed.mezu)+1)/N+1; p.mezu
+
+mean(perform.BRIG)
+hist(perform.BRIG, breaks = "FD")
+abline(v = observed.brig, col = "red")
+p.brig <- (sum(perform.BRIG >= observed.brig)+1)/N+1; p.brig
+```
+
+
+
+

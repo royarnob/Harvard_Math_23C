@@ -1,0 +1,166 @@
+---
+title: The Riemann Integral and Its Generalizations
+author: Mathematics for Computation and Data Science
+date: Arnob Roy
+output: pdf_document
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{flushleft}\LARGE \scshape}
+  - \posttitle{\end{flushleft}}
+  
+  - \preauthor{\begin{flushleft}\large}
+  - \postauthor{\end{flushleft}}
+  
+  - \predate{\begin{flushleft}\large}
+  - \postdate{\end{flushleft}}
+---
+
+# Homework
+
+## Problem 1. Kurtosis
+
+$$
+\begin{aligned}
+\text{Second Central Moment (Variance): } & \sigma^2 = \mathbb{E}[(X-\mu)^2] \\
+\text{Fourth Central Moment: } & \mu_4 = \mathbb{E}[(X-\mu)^4] \\
+\text{Kurtosis: } & \frac{\mu_4}{(\sigma^2)^2}-3
+\end{aligned}
+$$
+
+Let $X$ be a random variable and $f_X(x)\ge0$ be its **probability density function** for which the probability of event $A:a<X\le b$ can be integrated as:
+
+\[P(A)=\int_a^b f_X(x)dx\]
+
+In this problem, we are interested in the  normal distribution with the probability density function:
+
+\[f_X(x)= \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}\]
+
+So, to find the expectation of the normal distribution by integration, (lecture 4, topic 18), let's consider the following integral:
+
+\[\int_{-\infty}^{\infty}xf_X(x)\ dx=\int_{-\infty}^{\infty}x \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}\ dx\]
+
+Now, I have just realized, that I can just use dnorm() in R:
+
+```{r}
+#Probability of the normal distribution by integration
+f <- function(x) dnorm(x)
+integrate(f, -Inf, Inf)
+
+#First Central Moment (Expectation) of the normal distribution by integration
+f <- function(x) (x)*dnorm(x)
+integrate(f, -Inf, Inf)
+
+#Second Central (Variance) Moment of the normal distribution by integration
+f <- function(x) (x^2)*dnorm(x)
+integrate(f, -Inf, Inf)
+
+#Fourth Central Moment of the normal distribution by integration
+f <- function(x) (x^4)*dnorm(x)
+integrate(f, -Inf, Inf)
+```
+
+Thus, we have that for the normal distribution:
+
+$$
+\begin{aligned}
+\text{Second Central Moment (Variance): } & \sigma^2 = \mathbb{E}[(X-\mu)^2]=\int_{-\infty}^{\infty}x^2 \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}} \to 1 \\
+\text{Fourth Central Moment: } & \mu_4 = \mathbb{E}[(X-\mu)^4] = \int_{-\infty}^{\infty} x^4 \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}} \to 3 \\
+\text{Kurtosis: } & \frac{\mu_4}{(\sigma^2)^2}-3 \to \frac{3}{(1^2)^2}-3 = \frac{3}{1^2}-3 = 3-3 = 0
+\end{aligned}
+$$
+
+After setting the probability density function to the uniform distribution with probability $1/2$ on the interval $[-1,1],$ I got that the variance is $\frac{1}{3}$ and the fourth moment (kurtosis) is $0.2.$
+
+
+```{r}
+#Second Central (Variance) Moment of the uniform distribution (1/2) by integration
+f <- function(x) (x^2)*dunif(1/2, min = -1, max =1)
+integrate(f, -1, 1)
+
+#Fourth Central Moment of the uniform distribution (1/2) by integration
+f <- function(x) (x^4)*dunif(1/2, min = -1, max =1)
+integrate(f, -1, 1)
+```
+
+#Problem 2
+```{r}
+library(resampledata)
+hist(Service$Times)
+curve(dgamma(x, shape = 2.65, rate = 3.81), col = "red", add=TRUE) 
+```
+
+```{r}
+#Expectation for the dataset
+mean(Service$Times)
+
+#Variance for Service$Times
+var(Service$Times)
+```
+
+```{r}
+#Probability of the Gamma distribution by integration
+f <- function(x) dgamma(x, shape = 2.65, rate = 3.81)
+integrate(f, -Inf, Inf)
+
+#First Central Moment (Expectation) of the Gamma distribution by integration
+f <- function(x) (x)*dgamma(x, shape = 2.65, rate = 3.81)
+integrate(f, -Inf, Inf)
+
+#Second Central (Variance) Moment of the Gamma distribution by integration
+f <- function(x) (x^2)*dgamma(x, shape = 2.65, rate = 3.81)
+integrate(f, -Inf, Inf)
+
+#Fourth Central Moment of the Gamma distribution by integration
+f <- function(x) (x^4)*dgamma(x, shape = 2.65, rate = 3.81)
+integrate(f, -Inf, Inf)
+```
+
+It seems that the expectation for the wait times of 0.6949234 closely matched the Gamma Distribution (with shape $r = 2.65$ and rate $\lambda = 8.31$); however, the variance of the Gamma Distribution was much higher than the variance of the data set.
+
+```{r}
+r <- hist(Service$Times, breaks = 10)
+text(r$mids, r$density, r$counts, adj = c(.5, -.5), col = "blue3")
+
+#Calculate expected in each bin by integration
+f <- function(x) dgamma(x, shape = 2.65, rate = 3.81)
+pBin1 <- integrate(f, 0, 0.2)$value; 100*pBin1
+pBin2 <- integrate(f, 0.2, 0.4)$value; 100*pBin2
+pBin3 <- integrate(f, 0.4, 0.6)$value; 100*pBin3
+pBin4 <- integrate(f, 0.6, 0.8)$value; 100*pBin4
+pBin5 <- integrate(f, 0.8, 1)$value; 100*pBin5
+pBin6 <- integrate(f, 1, 1.2)$value; 100*pBin6
+pBin7 <- integrate(f, 1.2, 1.4)$value; 100*pBin7
+pBin8 <- integrate(f, 1.4, 1.6)$value; 100*pBin8
+pBin9 <- integrate(f, 1.6, 1.8)$value; 100*pBin9
+pBin10 <- integrate(f, 1.8, Inf)$value; 100*pBin10
+Expected <- 100*c(pBin1,pBin2,pBin3,pBin4,pBin5,pBin6,pBin7,pBin8,pBin9,pBin10); Expected
+
+TheData<-c(rep("0-0.20",10),rep("0.20-0.40",41),rep("0.40-0.60",40),rep("0.60-0.80",29),rep("0.80-1.0",19),rep("1.00-1.20",15),rep("1.20-1.40",6), rep("1.40-1.60",5), rep("1.60-1.80",6), rep("1.80-Inf", 3))
+Numbers <- table(TheData); Numbers
+
+#Chi-Square Test
+Chi2 <-sum((Numbers-Expected)^2/Expected); Chi2
+Pvalue<- pchisq(Chi2,8,lower.tail = FALSE); Pvalue
+
+#Interpretation: The probability that the data arose by chance is about 3.1*10^-11 (very small)
+```
+
+# Problem 3.
+```{r}
+runif(3)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

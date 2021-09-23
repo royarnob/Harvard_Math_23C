@@ -1,0 +1,44 @@
+#Press Ctrl-Enter to run this app
+library(shiny)
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons("horiz", "Variable to plot horizontally", 
+          choiceNames = list("Wait time", "Eruption duration"),
+          choiceValues = list("waiting", "eruptions")),
+        radioButtons("vert", "Variable to plot vertically", 
+          choiceNames = list("Next wait time", "Next eruption duration"),
+          choiceValues = list("Next Waiting", "Next Duration")),
+        actionButton("btnHist", "Histogram for horizontal variable"),
+        actionButton("btnPlot", "Scatter plot")
+      ),
+      mainPanel(
+        plotOutput("plot")
+      )
+    )
+  )
+  server <- function(input, output) {
+    observeEvent(input$btnHist, {
+      df <- get("faithful")
+      x <- df[,input$horiz]
+      output$plot <- renderPlot({
+        bins <- seq(min(x), max(x), length.out = 50)
+        hist(x, breaks = bins, col = "#75AADB", border = "white",
+         xlab = "",
+         main = "")
+      })
+    })
+    observeEvent(input$btnPlot,{
+       df <- get("faithful")
+       x <- df$eruptions
+       y <- df$waiting
+       x1 <- c(tail(x,-1),1)
+       y1 <- c(tail(y,-1),1)
+       h <- if(input$horiz == "eruptions")x else y
+       v <- if(input$vert == "Next Duration") x1 else y
+       if(v[1] == h[1]) v <- y1
+       output$plot <- renderPlot({plot(h,v, xlab = input$horiz, ylab = input$vert)})
+    })
+  }
+shinyApp(ui, server)
+

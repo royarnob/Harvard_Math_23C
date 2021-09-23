@@ -1,0 +1,902 @@
+---
+title: "Math 23c - Week 2"
+author: "Paul Bamberg"
+output:
+  slidy_presentation:
+    font_adjustment: +1
+    incremental: true
+    widescreen: true
+  classoption: aspectratio=169
+runtime: shiny
+---
+<style type="text/css">
+div.slide p {
+  color: DarkBlue;
+  font-size:smaller;
+}
+div.slide h1 {
+  color: DarkRed;
+  font-size: 100%;
+}
+div.slide h2 {
+  color: DarkGreen;
+  font-size: smaller
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The pigeonhole principle for finite sets
+
+* Let $A$ be the set of your pigeons, and let $B$ be the set of pigeonholes in which they live.
+
+* Let $f: A \rightarrow B$ be the function that assigns to each pigeon the pigeonhole in which it lives.
+
+* The pigeonhole principle states that if $|A| > |B|$, then there exists a pigeonhole in which more than one pigeon lives.
+
+* Here is a diagram with $|A| = 4, |B| = 3$ to illustrate this idea.
+
+```{r, echo = FALSE, fig.width = 8, fig.height = 4}
+plot(NULL, xlim = c(-.5, 1.5), ylim = c(-.1, 0.8),mar = c(0,0,0,0), xlab = "", ylab = "", xaxt = "n" ,yaxt = "n")
+arrows(c(0,0,0),c(0.2, 0.4, 0.6),c(1,1,1),c(0.2, 0.4, 0.6))
+arrows(0,0,1,0.2, lty = 3)
+points(c(0,0,0,0,1,1,1),c(0, 0.2, 0.4, 0.6, 0.2, 0.4, 0.6))
+text(0, 0.7, "A")
+text(1, 0.7, "B")
+text(0.7, 0, "This pigeon must move into an occupied pigeonhole")
+```
+
+* A more formal statement of the pigeonhole principle for the case of finite sets:  
+Let $A$ and $B$ be finite sets, with $|A| > |B|.$ 
+Then no function $f: A \rightarrow B$ can be injective.
+
+# Role reversal
+
+* We can reverse roles. Here is a diagram with $|A| = 3, |B| = 4$ where now $A$ is the set of pigeonholes, $B$ the set of pigeons.
+```{r, echo = FALSE, fig.width = 8, fig.height = 4}
+plot(NULL, xlim = c(-.5, 2), ylim = c(-.1, 0.8),mar = c(0,0,0,0), xlab = "", ylab = "", xaxt = "n" ,yaxt = "n")
+arrows(c(0,0,0),c(0, 0.2, 0.4),c(1,1,1),c(0.2, 0.4, 0.6))
+points(c(0,0,0,1,1,1,1),c(0, 0.2, 0.4, 0, 0.2, 0.4, 0.6))
+text(0, 0.7, "A")
+text(1, 0.7, "B")
+text(1.4, 0, "This pigeonhole is unoccupied")
+```
+
+* A more formal statement of this case:  
+Let $A$ and $B$ be finite sets, with $|A| < |B|.$   Then no function $f: A \rightarrow B$ can be surjective.
+ 
+# A useful corollary:
+
+* Let $A$ and $B$ be finite sets, with $|A| = |B|.$ Then if $f: A \rightarrow B$ is not surjective, it is not injective.  
+We can prove this corollary, using the pigeonhole principle.
+
+* Proof:
+  + Let $C\subset B$ be the image of function $f: A \rightarrow B.$
+  
+  + Since $f$ is not surjective, $|C| < |B|.$
+  
+  + Given that $|B| = |A|$, $|C| < |A|.$
+  
+  + In other words $|A| > |C|$ and by the pigeonhole principle $f$ is not injective.
+
+* Contrapositive: Suppose $|A| = |B|$.  
+If $f: A \rightarrow B$ is injective, it is also surjective.
+
+
+
+
+
+# The pigeonhole principle is useful for proving that a "trial and error'' algorithm will surely succeed.
+
+* Give me a set of four positive integers, for example 7, 17, 5, and 11. By adding and subtracting some or all of them, I guarantee to make an integer that is divisible by 15.
+
+* The pigeonholes are the nonzero remainders when an integer is divided by 15. There are 14 of them, 1, 2, ... 14.
+
+* The pigeons are the numbers that result from adding up one or more of the four integers, dividing by 15, and keeping the remainder. 
+ 
+* From $\{7,17,5,11\}$ you can make $2^4 - 1 = 15$ nonempty subsets.  Therefore there are more pigeons than pigeonholes and there must be either zero remainder or a duplicate nonzero remainder. 
+
+# Using R to find the solution
+
+```{r echo = TRUE}
+theSet <- c(7, 17, 5, 11)
+#Generate a data frame with all ways of including or excluding a number
+df <- expand.grid(c(0,1),c(0,1),c(0,1),c(0,1)) #all possible subsets
+colnames(df) <- theSet
+df$sum <- df[[1]]*theSet[1] + df[[2]]*theSet[2] + df[[3]]*theSet[3] + df[[4]]*theSet[4]
+df$remainder <- df$sum %%15  #remainder when subset sum is divided by 15
+df[2:16,]   #ignore the empty set 
+```
+
+* In this case one duplicate remainder is 5.
+It results from the subset $\{5\}$ and from $\{7, 17, 11\}$
+So $7 + 17 +11 - 5 = 30$, which is divisible by 15
+
+The other duplicate remainders, 7 and 3, both lead to $17+5 - 7 = 15$
+
+# Finding a good rational approximation to $\pi$
+
+* Find a rational number $q$ for which $|\pi - q|$ is less than 1/10.  
+  + The pigeons are the digits after the decimal point in the first 11  multiples of $\pi$
+  + The pigeonholes are the 10 digits 0, 1, ... 9.
+  + There must be a duplicate digit (in fact, there are three).
+  + We can use any pair of duplicates to find a fraction that is close to $\pi$.
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+0&1&2&3&4&5&6&7&8&9&10\\
+\hline
+0.00& 3.14 & 6.28 &9.42 &12.56 &15.70 &18.84  & 21.99 & 25.13 & 28.27 & 31.41\\
+\hline
+0&1&2&4&5&7&8&9&1&2&4\\
+\hline
+\end{array}
+$$
+* 2 and 9 lead to a duplicate digit 2 after the decimal point.  
+So $9 \pi - 2 \pi = 28.27 -6.28 = 21.99$  
+Thus $7 \pi = 21.99$ and $\pi \approx 22/7.$
+
+* The other duplicate pigeons, 1 from $\pi$ and $8 \pi$ and 4 from $3\pi$ and $10 \pi$, both also lead to 22/7
+
+
+
+
+# The generalized pigeonhole principle states  that if $|A| > k|B|$, then there exists a pigeonhole in which more than $k$ pigeons live.
+
+* Proof by contraposition:
+  + Let there be $|B| = n$ pigeonholes.
+Assume that each pigeonhole $B_i$ has $\leq k$ pigeons.
+  + Then $$|A| = \sum_{i=1}^n B_i \leq kn$$
+  + Thus $|A| \leq k|B|$, which contradicts $|A| > k|B|$.
+
+* Trivial application. Noah is watching 10 species board the ark. He counts a total of 21 animals. Show that at least one species has exceeded its quota of 2.  
+$|A| = 21, |B| = 10$ and so $|A| > 2 |B|$   
+It follows that there must be a species with more than 2 representatives.
+
+# A Tricky Application:
+
+* The Massachusetts legislature has passed new blue laws which forbid the teaching of mathematics on three specific days of the week.  
+Prove that no matter which three days they choose, there exists a sequence of three consecutive days on at least two of which the teaching of mathematics is forbidden.
+
+  + The pigeonholes are the 7 different 3-day sequences.
+
+  + The pigeons are the mandatory days of rest in these sequences. Note that if math cannot be taught on Tuesday, that leads to a day of rest in three pigeonholes, SMT, MTW, and TWTh.
+
+  + So each day of rest places a pigeon in each of three different pigeonholes.
+
+  + The three days of rest place a total of 9 pigeons into the 7 pigeonholes.
+
+  + It follows that there must be a pigeonhole occupied by more than one pigeon.
+
+  + In other words, there must a sequence of three consecutive days that includes at least two on which the teaching of mathematics is forbidden.
+
+* This approach is a little-known alternative to the celebrated "probabilistic method" invented by Paul Erdös.
+
+
+
+# Probability for finite sample spaces -- the simplest case
+
+* The sample space $S$ consists of possible outcomes of an experiment,  
+e.g. roll two dice, 1 red, 1 green. 
+
+* An outcome of an "experiment" is denoted by  $\omega$, e.g. "3 on red, 4 on green."
+
+* An "event'' $A$ is a subset of the sample space, e.g. "sum of the two numbers is 7."
+
+* The "sigma field" of events $\mathcal{F}$ to which probabilities can be assigned is assumed to be the "power set" $2^S$: the collection of all possible subsets of $S$.   
+So $\mathcal{F}$ includes not only "total is 6" but also "6 the hard way, 3+3." 
+
+* For a simple probability function, assume that each of the $n$ elements in $S$ has probability $1/n$. Then the probability of event $A$ can be determined by counting the number of elements in event (subset) $A$ and dividing by $n$.
+
+* A random variable is a real-valued function on the sample space, e.g. the number of sixes. 
+
+
+# Rules for a sigma-field in the finite case
+
+* Sigma-field $\mathcal{F}$ is a collection of events: subsets of the sample space $S$. 
+
+* We assign a probability to an event $A$ only if it is in the sigma-field.
+
+* If events $A$ and $B$ are in the  sigma-field $\mathcal{F}$, so is their union  $A \cup B$.
+
+* If events $A$ is in the  sigma-field $\mathcal{F}$, so is its complement $A^c$.
+
+
+# Sigma-fields for dice
+
+* If we roll two fair dice, one red and one green, an element of the sample space is of the form "2 on red, 5 on green." 
+
+* There are 36 elements in the sample space, each with probability $\frac{1}{36}$
+
+* The sum of the numbers on the dice is a random variable $T$.
+
+* Often only events like $T = 3$ "the total roll is 3" are of interest. 
+
+* For $T=3$ there are two outcomes, 2+1 and 1+3, so the probability is 2/36 = 1/18.
+
+* For $T=7$ there are six outcomes, $6+1, 5+2 \cdots  1+6$, so the probability is 6/36 = 1/6.
+
+* Other events in the sigma-field include "same number on both dice" and "total roll is a prime number."
+
+# The sigma-field and probabilities for Craps
+
+* For the opening roll in Craps, significant events are   
+$W$: 7 or 11, shooter wins and  
+$L$: 2, 3, or 12, shooter loses.
+
+* There is a third event $P$: 4, 5, 6, 8, 9, or 10. The number becomes the shooter's point and they keep rolling until they rool the point again and win or roll a 7 and lose.
+
+* The events $W, L$, and $P$ form a **partition** of the sample space.
+
+* The probabilities are $\mathbf{P}(W) = 6/36 + 2/26 = 2/9$  
+$\mathbf{P}(L) = 1/36 + 2/36 + 1/36 = 1/9$  
+$\mathbf{P}(P) = 1 - 2/9 = 1/9 = 2/3$
+
+* There are eight events in the sigma-field.
+$$S, \emptyset, W, W^c, L, L^c, W \cup L, (W \cup L)^c$$
+
+
+
+# Binomial coefficients as an aid in counting
+
+* If you carry out an experiment where each of a finite number of possible outcomes is equally likely, the probability of a successful outcome is $$\mathbf{P}(\text{Success event})=\frac{\text{Number of successful outcomes}}{\text{Number of possible outcomes}}$$
+
+* Suppose that set $A$ has $m$ elements and set $B$ has $n$ elements.  The Cartesian product $A \times B$ is the set of ordered pairs $(a, b)$, where $a \in A$ and $b \in B$.  
+The set $A \times B$ has $mn$ elements.
+
+* If $A$ has $n$ elements and you select a sequence of $r$ elements **with replacement** from $A$, there are $n^r$ possible sequences. 
+
+* If set $A$ has $n$ elements, then the number of distinct sequences of $r$ different elements (chosen without replacement, so no repetition allowed) is
+$$n(n-1)(n-2)...(n-r+1)=\frac{n!}{(n-r)!}.$$ 
+
+* If set $A$ has $n$ elements and you select a set of $r$ different elements from $A$, there are $r!$ distinct sequences for each set. Divide the number of sequences by $r!$ to get
+$$\binom{n}{r}=\frac{n!}{(n-r)! r!} \text{, the binomial coefficient "n choose r"}.$$
+
+
+
+# Sigma-fields and probabilities for coin flips
+
+* Instead of "flipping $n$ coins,'' where it is hard to keep track of which coin is \#1, it is usually easier to think of flipping a single coin $n$ times in succession. Then you get a sequence of results, like HHTHTTT.
+
+* The number of heads is a random variable $X$ on the sample space, and often the only events of concern are of the form $X = k$.
+ 
+* Example: for $n= 6$, find the probability of the event $X = 3$.
+ 
+* Solution: each sequence like HTTHHT has probability $\frac{1}{2^6}$. There are
+$$\binom{6}{3} = \frac{6!}{3!} = \frac{6\cdot 5 \cdot 4}{3 \cdot 3 \cdot 2 \cdot 1} = 20$$ such sequences.
+So the probability is $\frac{20}{64} = \frac{5}{16}$
+
+* For $n=6$, here are other types of events that must be in the sample space.  
+$X \neq 3$, $X$ is odd, $X \leq 3$, $X >3$)
+
+# Generating the sigma-field
+This idea will generalize to countably infinite sample spaces (week 3), and even to uncountably infinite sample spaces (week 5).
+
+Once you know the probability $\mathbf{P}( X \leq k)$ for all $k$ , you can use it to find the probability of any other event, like $X >4$ or $3 < X < 6$.
+
+* The event $X > 4$ is the complement of $X \leq 4$. So it is in the sigma-field, and 
+$$\mathbf{P}(X > 4) = 1 - \mathbf{P}(X \leq 4)$$
+
+* $$\mathbf{P}(3 < X < 6) = \mathbf{P}(X \leq 5) - \mathbf{P}(X \leq 2)$$
+ 
+* We say that the events $\mathbf{P}( X \leq k)$ "generate the sigma-field".
+
+
+
+# Sigma-fields and probabilities for cards
+
+* The usual assumption is that the deck of cards has been shuffled so well that each of the 52! permutations of the cards is equally likely. This requires a minimum of seven shuffles.
+
+* In bridge, a player is dealt a hand of 13 cards. The number of different **sequences** of 13 cards is 
+$52 \cdot 51 \cdot 50 \cdots 40 = \frac{52!}{{39!}}$
+
+* Players usually rearrange the cards in their hand, losing all information about the order in which the cards were dealt to them. The number of different **sets** of 13 cards is
+$\binom{52}{13} = \frac{52!}{39!13!}$
+
+* Bridge players are especially concerned with the number of cards in each individual suit.
+The number of ways to select 5 spades, 4 hearts, 3 diamonds, and 1 club to make a bridge player's hand is
+$\binom{13}{5}\binom{13}{4}\binom{13}{3}\binom{13}{1}.$
+
+* Books about bridge often include probability tables for events like "a 5-4-3-1 hand," ignoring which suit has 5 cards, which has 4, etc. There are $4! = 24$ ways to assign suits to 5, 3, 4, and 1; so we multiply the preceding result by 24. But beware of overcounting: for a 5-4-2-2 hand there are only $4\cdot 3 = 12$ ways to assign suits, and for 4-3-3-3 or 7-2-2-2 there are only 4 ways to choose the long suit.
+
+
+# Technique for calculating with binomial coefficients
+
+* First, cancel complete binomial coefficients.
+
+* Second expand in terms of factorials and clear complex fractions.
+
+* Third, cancel factorials.
+
+* Fourth, cancel factorials that are close together.
+ 
+* Last, expand any remaining factorials as products.
+
+
+
+# Sample problem: By what factor is a 4-4-3-2 hand more probable than a 4-3-3-3 hand?
+* There are 12 ways to choose suits for 4-4-3-2, 4 ways to choose suits for 4-3-3-3.
+
+* Start by canceling the binomial coefficients that occur in numerator and denominator:
+$$\frac{12 \binom{13}{4} \binom{13}{4} \binom{13}{3} \binom{13}{2}}{4\binom{13}{4} \binom{13}{3} \binom{13}{3} \binom{13}{3}}
+=\frac{3 \binom{13}{4}  \binom{13}{2}}{ \binom{13}{3} \binom{13}{3}}$$
+
+* Expand binomial coefficients in terms of factorials, and cancel common factors.
+$$\frac{3 \cdot 13! 13! 10! 3! 10! 3!}{9! 4! 11! 2! 13! 13!} = \frac{3 \cdot 10! 3! 10! 3!}{9! 4! 11! 2!}$$
+
+* Cancel nearby factorials from numerator and denominator
+$$3 \cdot \frac{10!}{9!} \frac{10!}{11!} \frac{3!}{4!} \frac{3!}{2!} = \frac{3 \cdot 10 \cdot 3}{11 \cdot 4} = \frac{45}{22}$$
+
+
+# Overcounting and correction
+
+* It is OK to overcount, as long as you know by what factor you are overcounting and divide by that factor.  
+
+* Example 1: A regular dodecahedron, as its name suggests, has 12 faces, each of which is a regular pentagon. Three faces meet at each vertex. How many vertices does the dodecahedron have?
+
+* Wrong: 12 pentagons $\times$  5 vertices per pentagon = 60.  
+
+* Correct: Since each vertex is part of three pentagons, we overcounted by a factor of 3. The correct answer is 60/3 = 20.
+
+
+
+* Example 2: How many different strings can you make by rearranging the letters in the word "SUCCESS"?
+
+* Wrong: The number of permutations of 7 symbols, 7!, would count each string 12 times, because there are 6 ways to reorder SSS and two ways to reorder CC.
+
+* The correct answer is $$\frac{7!}{3!2!} = 420.$$
+
+# Counting arrangements of indistinguishable objects
+
+* If you have two different types of object in a sequence, $n$ of type 1 and $k$ of type 2,  but the objects of each type are indistinguishable, the number of arrangements is equal to the number of ways of selecting the set of positions of the type 2 objects:
+$$
+\binom{n+k}{k}=\frac{(n+k)!}{n! k!}.
+$$
+
+
+* Example: a football team ends the regular season with an 11-5 record. How many different sequences of wins and losses can lead to this outcome?
+
+* Answer: There are $\binom{16}{5}$ ways to place the five losses among the 16 games. Equivalently, there are $\binom{16}{11}$ ways to place the eleven wins among the 16 games.
+
+# More examples of the divider strategy 
+* If there is a bijection between two sets $A$ and $B$, they have the same cardinality. Sometimes it is easier to count one than the other.
+
+* Example: You can divide a set of $n$ objects into $k$ subsets by inserting $k-1$ dividers. For example, to find all six-element strings that begin with 0 or more A's, continue with 0 or more B's, and end with 0 or more C's, just put one divider between the last A and the first B, a second divider between the last B and the first C. The bijection maps a pattern of letters and dividers like $xxx|x|xx$ into a string like AAABCC. Then there are $\binom{6+2}{2}$ different ways to place the two dividers.
+
+
+* Another example:
+How many different terms of the form $x^ix^jx^kx^l$ are equal to $x^{11}?$  
+Clever trick: Each term is like $xxx|xxxxx|x|xx$.
+
+* So there are $\binom{11+3}{3}$ ways to place the dividers.  
+Notice that ||xxxxxxxxxxx| coresponds to $x^0x^0x^{11}x^0$.
+
+#  Finitely additive set functions
+
+* We consider functions $f: \mathcal{F} \rightarrow \mathbb{R}$, where $\mathcal{F}$ is a collection of some (perhaps all) of the subsets of a "universal set'' $S.$ The set $S$ can be finite, countably infinite, or uncountably infinite. 
+
+* Example: $\mathcal{F}$ is a collection of regions (possibly overlapping) in the United States, and $f$ specifies the area or population of a region.
+
+* For $A, B \in \mathcal{F}$, $A - B$ denotes the set of elements of $S$ that are in $A$ but not in $B$, and $A^c$, the complement of $A$, denotes $S-A$.
+
+* $A$ and $B$ are **disjoint** if they have no elements in common: $A \cap B = \emptyset.$ 
+
+* Function $f$ is **finitely additive** if, for disjoint sets,   $f(A \cup B) = f(A) + f(B).$ 
+
+# Inclusion-exclusion
+
+* The inclusion-exclusion principle extends this result to sets that are not disjoint. It asserts that for a finitely additive set function,  
+$f(A \cup B) = f(A) + f(B)-f(A \cap B).$
+
+* The secret of the proof is to write sets as disjoint unions of other sets so that you can apply the additivity property.
+
+  + $f(A \cup B) = f(A) + f(B-A)$ because $(A \cup B) = A \cup (B-A)$ (disjoint)
+  
+  + $f(B) = f(A\cap B) + f(B-A)$ because $B = (A\cap B) \cup (B-A)$ (disjoint)
+  
+* Subtract to find $f(A \cup B) - f(B) = f(A) - f(A\cap B)$
+and rearrange to get $f(A \cup B) = f(A) + f(B)-f(A \cap B).$
+
+* Nothing in this proof required $f$ to be nonnegative.
+
+# Simple application of inclusion-exclusion
+
+* Over the last 24 hours, my high-tech stocks are up by \$40. My high-tech domestic stocks are up by \$100, while my stocks that are either high-tech or domestic are down by \$40.
+What was the change in value of my domestic stocks?
+
+* Solution: Let $T$ be the subset of high-tech stocks, let $D$ be the subset of domestic stocks. Then  
+$f(T) = +40, f(T \cap D) = +100, f(T \cup D) = -40$
+
+* Inclusion-exclusion says that $f(T \cup D) = f(T) + f(D)-f(T \cap D).$  
+So $-40 = 40 + f(D) -100$ and $f(D) = 100 -40 -40 = 20.$  
+Negative numbers posed no problem. 
+ 
+# Finitely additive measure
+
+* If a finitely additive set function is non-negative, it is called a **finitely additive measure**. From this property we can deduce inequalities like
+$f(A \cup B) \leq f(A) + f(B).$
+ 
+* Proof: $f(A \cup B) = f(A) + f(B)-f(A \cap B)$   but now $f(A \cap B) \geq 0$ and so   
+$f(A \cup B) \leq  f(A) + f(B)$.
+
+# Probability measure
+
+* If $f$ has the property that $f(S) = 1$, it is called a **finite probability measure** and is denoted $\mathbf{P}(A)$. In this case, a subset $A \subset S$ is called an "event". 
+
+* Now we can make statements like
+$\mathbf{P}(A^c) = 1 - \mathbf{P}(A).$  
+ 
+* Proof: $A \cup A^c = S$ (disjoint) so $\mathbf{P}(A) + \mathbf{P}(A^c) = 1.$  
+
+
+
+
+
+# Random variables and expectation
+
+* A **random variable** is not a variable! It is a function $X: S \rightarrow \mathbb{R}.$ If $S$ is finite, the image of $X$ is a finite subset of $\mathbb{R}$. 
+
+* A **probability space** $(S,\mathcal{F},\mathbf{P})$ requires a sample space, a sigma-field, and a probability measure.
+
+* The **expectation** of a **simple** random variable $X$, one which can assume only a finite number $k$ of different values $c_i$, is defined as a sum over those values:
+$$E(X) = \sum_{i=1}^k c_i \mathbf{P}(X = c_i).$$
+
+* In order to define the expectation of $X$, we impose the requirement that $X$ is "measurable": the event "$X$ has the value $c_i$" is in the sigma-field $\mathcal{F}$.  
+
+* Equivalently, we could have imposed the more general requirement that the event $X \leq x$ is in the sigma-field for any real number $x$. However, that would lead to an unnecessarily large sigma-field: who cares whether the total roll on two dice is $\leq 2 \pi?$
+
+
+* The definition of expectation can work even if the sample space is not finite! For example, $S$ could be $[0, 100]$, with $X(s) = 1$ if $s \leq 20$,   $X(s) = 2$ if $20 < s \leq 60$, $X(s) = 3$ if $s > 60$.  
+But now we need a bigger sigma-field, with events like $20 < s \leq 60$.
+
+# Indicator functions
+
+* The **indicator function** $\mathbf{1}_A$, which has the value 1 if $\omega \in A$, 0 otherwise, is a random variable on the probability space.  
+
+* Then for any event $A$,  $E(\mathbf{1}_A) =\mathbf{P}(A)$.  
+Proof: $E(\mathbf{1}_A) = 1 \cdot \mathbf{P}(\mathbf{1}_A = 1) + 0 \cdot \mathbf{P}(\mathbf{1}_A = 0) = 1 \cdot \mathbf{P}(A) = \mathbf{P}(A)$
+
+# Random variables in terms of indicator functions
+
+* Any simple random variable $X$ can be expressed uniquely in the form
+$X = \sum_{i=1}c_i.\mathbf{1}_{A_i} .$
+where the values $c_i$ are the values that can be assumed by $X$ and the events $A_i$ are the inverse images $X^{-1}({c_i})$, for which $X(s) = c_i$ if $s \in A_i.$
+ 
+* Then $E(X)= \sum_{i=1}c_i\mathbf{P}(A_i) = \sum_{i=1}^n c_i \mathbf{P}(X = c_i).$
+ 
+* If $S$ is finite (size $n$), we can use the sigma-field $\mathcal{F} = 2^S$, although it may be larger than the sigma-field generated by the events $A_i$.
+
+* Then any single-element set $\{s\}$ is in the sigma-field and we can define an indicator function $\mathbf{1}_{\{s\}}$ for it.   
+ The indicator function for the event $A_i$ can now become a sum over the sample space:
+$$\mathbf{1}_{A_i} = \sum_{s: X(s) = c_i}\mathbf{1}_{\{s\}},\text{   and}$$
+$$E(X) = \sum_{i=1}^kc_i\mathbf{1}_{A_i} = \sum_{i=1}^kc_i  \sum_{s: X(s) = c_i}\mathbf{1}_{\{s\}}= .\sum_{s \in S}X(s)\mathbf{1}_{\{s\}} $$
+$$\text{ or   }E(X) = \sum_{i=1}^kc_i\mathbf{P}(A_i) = \sum_{s \in S}X(s)\mathbf{P}(\{s\}).$$
+This is a special case of the so-called "law of the unconscious statistician.'' 
+
+
+
+# Working with the unconscious statistician:
+
+You roll a single fair die. If the roll is 1, your payoff $X$ is 6. For a larger odd roll, your payoff $X$ is 12.  For an even roll, your payoff $X$ is 18. There are two ways to express $X$ as a sum of indicator functions:
+
+* Over the image of $X$.  
+$X = 6 \cdot \mathbf{1}_{X=6} + 12 \cdot \mathbf{1}_{X=12} + 18 \cdot \mathbf{1}_{X=18}$
+ 
+* Over the domain of $X$ (the sample space)  
+$X = 6 \cdot \mathbf{1}_{1} + 12 \cdot \mathbf{1}_{\{3,5\}} + 18 \cdot \mathbf{1}_{\{2,4,6\}}$
+ 
+* Here is a calculation of $E(X)$ that makes direct use of the definition of expectation. There is one term for each possible value of $X$.  
+$E(X) = 6 \cdot \mathbf{P}(X = 6) + 12 \cdot \mathbf{P}(X = 12)+ 18 \cdot \mathbf{P}(X = 18)$  
+$E(X) = 6 \cdot \frac{1}{6} +  12 \cdot \frac{1}{3} +  18 \cdot \frac{1}{2} = 1+4+9 = 14$
+
+* Here is a calculation of $E(X)$ that uses the law of the unconscious statistician. There is one term for each point in the domain.  
+$E(X) = 6 \cdot \mathbf{P}(1) + 18 \cdot \mathbf{P}(2)+ 18 \cdot \mathbf{P}(3) +18 \cdot \mathbf{P}(4) + 12 \cdot \mathbf{P}(5)+ 18 \cdot \mathbf{P}(6)$  
+
+* $E(X) = \frac{1}{6}(6 + 18 +12 +18+12+18) = \frac{84}{6} = 14.$
+
+
+
+# The sum of two simple random variables
+* Suppose that random variable $X$ takes values in the finite set $x_i$ and random variable $Y$ takes values in the set $y_i$. In order to define a probability function on the sample space $S$, we must know the probability of each event of the form $(X = x_i, Y = y_j).$
+
+* If $X$ and $Y$ are simple random variables, each of which takes on values in a finite subset of $\mathbb{R},$ and $Z = X+Y$, then $E(Z) = E(X) + E(Y)$.
+
+* Proof: $E(Z) = E(X+Y) = \sum_i \sum_j (x_i +y_j) \mathbf{P}(X = x_i, Y = y_j)$
+
+* Split the sum: $$E(Z) = \sum_i \sum_j x_i \mathbf{P}(X = x_i, Y = y_j) + \sum_i \sum_j y_j \mathbf{P}(X = x_i, Y = y_j)$$
+
+* In each term, one of the sums is just a sum over all values of one variable:  
+$$E(Z) = \sum_i (x_i) \mathbf{P}(X = x_i) +  \sum_j (y_j) \mathbf{P} (Y = y_j) = E(X) + E(Y)$$
+
+# The product of two independent simple random variables
+
+* Random variables $X$ and $Y$ are called  **independent** if   
+$\mathbf{P}(X = x, Y = y) = \mathbf{P}(X=x)\mathbf{P}(Y=y)$.   
+If $X$ and $Y$ are **independent** simple random variables and $W = XY$, then $E(W)= E(X) E(Y)$. 
+
+* Proof: $$E(W)= E(XY) = \sum_i \sum_j x_i y_j \mathbf{P}(X = x_i, Y = y_j).$$
+
+* Exploit independence: $E(W)= \sum_i \sum_j x_i y_j \mathbf{P}(X = x_i), \mathbf{P}(Y = y_j)$.
+
+* Factor: $E(X) = \sum_i x_i \mathbf{P}(X = x_i) \sum_j y_j \mathbf{P}(Y = y_j) = E(X)E(Y)$
+
+
+# Uncorrelated does not necessarily mean independent
+
+* The converse of the result just proved is not necessarily true: it is possible to invent "uncorrelated'' random variables, for which $E(XY) = E(X)E(Y)$, that are not independent.
+
+* Example: You take a two-question true-false test, guessing on each question so that your probability of bing correct is 1/2. "Right" scores +1, "wrong" scores -1. Random variable $X$ is your total score , -2, 0, or +2.
+Random variable $Y$ is your improvement from the first question to the second, -2, 0, or +2.
+$$
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+Probability & Q1 Score  & Q2 Score & X & Y & W = XY\\
+\hline 
+1/4 & 1 & 1  & +2 & 0 & 0 \\
+\hline 
+1/4 &1& -1  & 0 & -2  & 0\\
+\hline 
+1/4 &-1 & 1  &  0  & +2 & 0\\
+\hline 
+1/4 &-1& -1 & -2  & 0 & 0\\
+\hline 
+\end{array}
+$$
+
+* Now $E(X) = 0, E(Y) =0, E(XY) = 0$.  
+So $E(XY) = E(X)E(Y)$ and $X$ and $Y$ are uncorrelated.
+
+* But $X$ and $Y$ are not independent. One counterexample suffices to show this:   
+$\mathbf{P}(X=2, Y=2) = 0$ but  
+$\mathbf{P}(X=2) \mathbf{P}(Y=2) = \frac{1}{4} \cdot \frac{1}{4} \neq 0$
+
+# Definition and calculation of variance
+
+* The variance Var$(X)$ of a random variable $X$ is defined as $E((X - E(X))^2) .$
+
+* Given that $E(a_1X_1+a_2X_2) = a_1E(X_1) + a_2E(X_2)$ in all cases and that   $E(X_1X_2) = E(X_1) E(X_2)$ for independent random variables, we can prove three key results about variance.
+
+# One-pass calculation of variance
+
+* First note that $E(X)$ is a constant and so $E(E(X)) = E(X).$ 
+
+* Expand: $Var(X) = E((X - E(X))^2) = E(X^2 - 2E(X) \cdot X + E(X)^2)$
+
+* Evaluate:  $Var(X) = E(X^2) - 2E(X) \cdot E(X) + E(X)^2)$
+
+* Simplify:  $Var(X) = E(X^2) - E(X)^2$
+
+*  In a single pass through the sample space we can compute both $E(X)$ and $E(X^2).$
+
+# The effect of multiplying by a constant $a$ and adding a constant $b$
+
+* Use the previous formula: Var$(aX+b) = E((aX+b)^2) - (E(ax+b))^2$
+
+* Expand: Var$(aX+b) = E(a^2X^2) + 2E(ax)b + b^2 - E(aX)^2 - 2 E(aX)b - b^2$
+
+* Cancel and simplify: Var$(aX+b) = a^2E(X^2) - a^2(E(X)^2) = a^2 Var(X)$
+
+# Variance of the sum of two independent random variables
+
+* We will exploit the fact that in this case $E(XY) = E(X)E(Y)$. The variables $X$ and $Y$ only need to be uncorrelated, not necessarily independent.
+
+  + Use the one-pass formula: $Var(X+Y) = E((X+Y)^2) - E(X+Y)^2$
+  
+  + Expand: $Var(X+Y) = E(X^2) +2E(xY) +E(Y^2) -E(X^2) - 2E(X)E(Y) - E(Y)^2$
+  
+  + Combine terms: $Var(X+Y) = Var(X) + Var(Y) +2(E(XY) - E(X)E(Y))$
+
+* If $X$ and $Y$ are independent, they are uncorrelated and the last term is zero, in which case
+$Var(X+Y) = Var(X) + Var(Y)$
+
+* This result is easily extended by induction to the case of $n$ random variables that are "pairwise uncorrelated" in the sense that for $i \neq j$, $E(X_iX_j) = E(X_i)E(X_j)$. 
+
+* In the special case where $X$ is the sum of $n$ independent random variables, each with the same variance $\sigma^2$,
+$$Var(X) = n \sigma^2.$$
+
+# Variance of the mean of $n$ independent random variables
+
+* This is a theorem of probability.  
+Suppose that $X_1, X_2, \cdots X_n$ are independent random variables, all with the same expectation $\mu$ and variance $\sigma^2.$   
+Their mean is $\overline{X} = \frac{1}{n}(X_1 + X_2 + \cdots X_n).$
+
+* Then $$E(\overline{X}) = \frac{1}{n}(E(X_1)+ \cdots + E(X_n)) = \frac{1}{n}(n\mu) = \mu$$
+
+* $$Var(\overline{X}) = (\frac{1}{n})^2(Var(X_1)+ \cdots + Var(X_n)) = \frac{1}{n^2}(n \sigma^2) = \frac{1}{n} \sigma^2$$
+
+# Variance of the sample mean of $n$ independent random variables.
+
+* This is a theorem of statistics.  
+Let $X_1, X_2, \cdots X_n$ be independent random variables, each from a distribution with  
+Var$(X_i) = \sigma^2 < \infty.$
+
+* The **sample mean** is $\overline{X} = \frac{1}{n}(X_1 + X_2 + \cdots X_n).$
+
+* We do not know the expectation $\mu=E(x_i)$, although we know from the previous result that the **expectation** of $\overline{X}$ is equal to $\mu$.
+
+* We also do not know $\sigma^2$, the variance of $X_i$. We can try to estimate it by using the usual formula but, not knowing $\mu$, we can do no better than to use $\overline{X}$ in its place. The challenge:
+$\text{Prove that }E(\sum_{i=1}^n(X_i - \overline{X})^2)=(n-1)\sigma^2.$
+
+# Proof for the variance of the sample mean
+* Preliminary algebra: $$\sum_{i=1}^n(X_i - \overline{X})^2 = \sum_{i=1}^nX_i^2 - 2 \overline{X}\sum_{i=1}^nX_i+n \overline{X}^2 $$
+$$\sum_{i=1}^n(X_i - \overline{X})^2 = \sum_{i=1}^nX_i^2 - 2n \overline{X}^2 +n \overline{X}^2 =  \sum_{i=1}^nX_i^2-n \overline{X}^2.$$
+
+* Now take expectations: $$E(\sum_{i=1}^n(X_i - \overline{X})^2)  = E(\sum_{i=1}^nX_i^2) -n E(\overline{X})^2.$$
+ 
+* Use the formula $Var (X_i) = \sigma^2 = E(X_i^2) - \mu^2$ backwards to get 
+$$E(\sum_{i=1}^n(X_i - \overline{X})^2) = n(\sigma^2 + \mu^2) - n(Var(\overline{X}) + \mu^2)$$
+$$E(\sum_{i=1}^n(X_i - \overline{X})^2) = n(\sigma^2 + \mu^2) - n(\frac{\sigma^2}{n} + \mu^2)$$
+$$E(\sum_{i=1}^n(X_i - \overline{X})^2) = n\sigma^2 - \sigma^2 = (n - 1) \sigma^2$$
+
+# Estimating the variance of a random variable from sample variance
+* We have found that $$E(\sum_{i=1}^n(X_i - \overline{X})^2) = (n - 1) \sigma^2$$
+
+* If we have measured the sample variance, the best estimate of the unknown variance $\sigma^2$ for an individual measurement in a sample is $$S^2 = \frac{1}{n-1} \sum_{i=1}^n(X_i - \overline{X})^2.$$ This will not equal $\sigma^2$, but it has the nice property of being an "unbiased" estimate whose **expectation** is equal to $\sigma^2.$ 
+
+* This \emph{sample variance} $S^2$ is what ```var()``` computes in R. It is usually appropriate when you are dealing with real data, since you probably have a sample from a larger population and want to estimate the variance for the population. If, however, you model a **population** by constructing a dataframe with one row for each equally likely element, do not use ```var()```.   Here is a simple example in R:
+```{r, echo = TRUE}
+v <- 1:6; v #outcomes for roll of a single die
+mu <- mean(v); mu #the expectation of the roll
+sigsq <- mean(v^2) - mu^2; sigsq #the variance of the population
+var(v)   #this is wrong - it assumes we had a sample from a larger population
+#Let's confirm this by sampling from the population.
+#First do a single sample
+x <- sample(v, 5, replace = TRUE)  # sample of five drawn from this population
+x.bar <- mean(x); x.bar   #the sample mean - a random variable
+x.Var <- mean(x^2)-x.bar^2; x.Var  #the variance of the numbers in the sample - we divided by 5
+Ssq <- (1/4)*(sum(x^2) - 5*x.bar^2); Ssq #the sample variance
+var(x)  #the built-in function gives the sample variance
+#Now repeat with 10000 samples
+N <- 10000; vecMu <- vecVar <- vecSsq <- numeric(N); #create empty vectors
+for (i in 1:N){
+  x <- sample(v, 5, replace = TRUE)  # sample of five drawn from this population
+  vecMu[i] <- mean(x)   #the sample mean - a random variable
+  vecVar[i] <- mean(x^2)-mean(x)^2  #the variance of the numbers in the sample - we divided by 5
+  vecSsq[i] <- (1/4)*(sum(x^2) - 5*mean(x)^2) #the sample variance
+}
+hist(vecMu, breaks = 25)
+mean(vecMu); mu   #agrees with the population mean
+hist(vecVar, breaks = 25)
+mean(vecVar); sigsq   #does not agree with the population variance
+mean(vecSsq); sigsq   #agrees with the population variance
+```
+
+# Using R to do finite probability
+
+* A **data frame** in R is a list of vectors, all of the same length, placed side-by-side in a two-dimensional array.
+
+* The sample space $S$ consists of all the rows in a data frame.
+
+* An outcome $\omega$ of an "experiment'' is an individual row.
+
+* An event $A$ is just a subset of the rows. 
+
+* The sigma field of events to which probabilities can be assigned is the power set $2^S$: the collection of all possible subsets. 
+
+* For a probability function, assume that each of the $n$ rows has probability $1/n$. Then the probability of event $A$ can be determined by counting the number of rows in event (subset) $A$.
+
+* If you want unequal probabilities whose ratio is a rational number like $3/2$, include three rows for the first outcome, two for the second.
+
+# Numeric, logical and factor columns
+* The difference between a matrix and a dataframe in R is that the columns of a matrix must be **numeric** vectors, while the columns of a dataframe may be numeric, logical, or factor columns.
+
+* A numeric column in a data frame is a random variable, since it assigns a real number to each row. When the "vectorized'' operators in R act on columns of a data frame, they carry out the specified operation on each row and  can be viewed as operations on random variables.
+
+* A constant, since it gets replicated $n$ times when combined with a vector of length $n$, behaves like a constant random variable when it appears in an $R$ expression like `X+2`.
+
+* A logical column in a data frame specifies an event $A$, the set of rows for which the value is `TRUE`.  The complement of event $A$ is the the set of rows for which the value is `FALSE`. 
+
+* Since `TRUE` has the value 1, a logical column can be treated like a random variable; namely, the "indicator function" that equals 1 if event $A$ occurs, 0 if it does not.
+
+* A "factor" column in a data frame specifies a **partition** of the sample space into disjoint events (subsets) $B_1, B_2, \cdots B_k.$  
+
+# Calculating means and variances from a data frame
+* The R function `mean()` computes the expectation of a random variable.
+
+* The R function `var()` does not compute the variance of a random variable. It assumes that it has been given a vector of samples, and it estimates the variance of the population from which those samples were drawn.
+
+* If you use a dataframe to calculate the variance of a random variable X, use `mean(X^2) - mean(X)^2`.
+
+* Many elementary probability problems can be solved by counting how many rows in a data frame correspond to a specified event.
+
+# Example with unequal probabilities
+* On a fair roulette wheel with no 0, you can bet that the number that arises is divisible by 3. If it is, you win 2 chips, if not, you lose 1 chip. Suppose you place five such bets. What are the expectation and variance of your net winninngs, and what is the probability of winning two or more times?
+```{r, echo = TRUE}
+play1 = c(2,-1,-1)  #the equally likely outcomes for 1 play
+df <- expand.grid(play1, play1, play1, play1, play1); head(df)
+#Create a new random variable for the net winnings
+df$net <- df$Var1 + df$Var2 +df$Var3 + df$Var4 +df$Var5; head(df)
+mean(df$net)  #no surprise -- the wheel was fair
+mean(df$net^2) - mean(df$net)^2   #the variance
+#There is a formula npq for the variance in this case of a binomial distribution
+#but we must multiply by 3^2 = 9
+9 * 5 * (1/3) * (2/3)   #variance as calculated from the binomial distribution
+var(df$net)   #wrong, but with so many rows it makes little difference
+mean(df$net > 0) #probability of 2 or more wins
+```
+
+# The built-in binomial distribution
+
+* In the previous example, we can calculate the probability of $k$ wins in 5 spins
+```{r}
+n <- 5   #number of spins of the wheel
+p <- 1/3   #probability of winning on a single spin
+pWin <- function(k) choose(n,k)*p^k*(1-p)^(n-k)
+pWin(2)
+#R has a built-in function for this calculation
+dbinom(2,n,p)
+#It can also tell you the probability of more than 1 win
+pbinom(1,n,p, lower.tail = FALSE); 0.5390947  #compare with previous number
+# Making a barplot requires clever use of outer()
+tbl <- outer(0:n, p, dbinom, size = n); tbl
+#This is almost right but we need to transpose it!
+barplot(t(tbl), names.arg = 0:n)
+
+```
+
+
+# A standard application of inclusion-exclusion, done by brute force in R
+
+* What is the probability, when two different cards are selected at random from a deck, that at least one is a spade?
+```{r, echo = TRUE}
+df <- expand.grid(1:52, 1:52); head(df)
+#Eliminate rows with duplicate cards
+df <- subset(df, !(Var1==Var2)); nrow(df); 52*51
+#If the card number is divisible by 4, the card is a spade
+mean((df$Var1%%4 == 0)| (df$Var2%%4 == 0))
+1 - (39*38)/(52*51)   #the conventional way to get the answer
+```
+# How to conduct a permutation test, as in script 2D
+
+* This single technique can replace much of elementary classical statistics.
+
+  + You have $m$ values for one subgroup (ounces of beer consumed by males)
+  + You have $n$ values for the other subgroup (ounces of beer consumed by females)
+  + You have computed the mean values for the two subgroups, and they are different.
+  + You want to assess whether this difference is significant.
+  + The strategy is to determine how frequently such a large difference is likely to arise if, instead of the $m$ males, you use a random subset of $m$ of the $m+n$ beer drinkers.
+
+
+* Here is the algorithm, taken verbatim from Chihara and Hesterberg,
+\underline{Mathematical Statistics with Resampling and R}
+
+* Pool the $m+n$ values.
+
+* **repeat**  
+  + Draw a resample of size $m$ without replacement.
+  + Use the remaining $n$ observations for the other sample.
+  + Calculate the difference of means or another statistic that compares samples,
+**until** we have enough samples.
+
+* Calculate the P-value as the fraction of times the random statistics exceed the original statistic. Multiply by 2 for a 2-sided test.
+
+* Optionally, plot a histogram of the random statistic values.
+
+# Permutation test for beerwings
+```{r, echo = TRUE}
+#Load the beerwings dataset from a file in the current directory (make sure it's the default)
+bw <- read.csv("beerwings.csv"); head(bw)
+#Divide beer consumed by men by the number of men
+beerMale <- sum(bw$Beer*(bw$Gender=="M"))/sum(bw$Gender=="M"); beerMale
+#Divide beer consumed by women by the number of women
+beerFemale <- sum(bw$Beer*(bw$Gender=="F"))/sum(bw$Gender=="F"); beerFemale
+beerDiff <- beerMale-beerFemale; beerDiff  #is this difference significant?
+
+#Repeat with a random sample, same size as the subset of men
+samp <- sample(nrow(bw), sum(bw$Gender == "M")); samp
+beerSamp <- mean(bw$Beer[samp]); beerSamp; #mean for the random sample
+beerOther <- mean(bw$Beer[-samp]); beerOther; #mean for the complement of the random sample
+diff <- beerSamp - beerOther
+
+#Once it works, do it 10000 times
+N <- 10000; diff <- numeric(N)
+for (i in 1:N) {
+  samp <- sample(nrow(bw), sum(bw$Gender == "M"))
+  beerSamp <- mean(bw$Beer[samp]) #mean for the random sample
+  beerOther <- mean(bw$Beer[-samp]); #mean for the complement of the random sample
+  diff[i] <- beerSamp - beerOther
+}
+hist(diff, breaks = 30)
+abline(v= beerDiff, col = "red") #observed difference is way out on the tail
+mean(diff >= beerDiff)  #Usually the P-value is about 3%
+#The textbook does hotwings, for which the P-value is smaller
+```
+# Munchkin problems - the hypergeometric distribution
+
+* This is based on a true story.  
+To placate her preschoolers while waiting for a flight from Logan Airport, Lisa buys six Dunkin' Muchkins, four plain and two chocolate. She chooses three at random and puts them in a bag for Thomas. The remaining three go into a bag for Catherine.  
+Find the probability for Thomas to have 0, 1, or 2 chocolate Munchkins.
+
+* Solution: there are $\binom{6}{3} = \frac{6!}{3!3!}= \frac{6\cdot 5 \cdot 4}{3\cdot 2 \cdot 1}=20$ ways to select the Munchkins for Thomas.  
+The number of ways to select $k$ chocolate Munchkins is $\binom{2}{k}$$\binom{4}{3-k}$.  
+
+* If $k=1$ the probability is $$\frac{\binom{2}{1}\binom{4}{2}}{20}=\frac{2\cdot 6}{20}= \frac{3}{5}.$$
+
+* If $k=2$ (or 0) the probability is $$\frac{\binom{2}{2}\binom{4}{1}}{20}=\frac{1\cdot 4}{20}= \frac{1}{5}.$$
+
+* The number $k$ of Munchkins in Thomas's bag is said to have a **hypergeometric distribution.**
+
+# Permutation Tests and Contingency Tables
+
+The Munchkin problem can be solved by making two columns for the positions of the chocolate Munchkins.
+
+```{r}
+#install.packages("combinat")
+library(combinat)
+positions <- combn(1:6,2); positions #a matrix with two rows
+choc1 <- positions[1,]
+choc2 <- positions[2,]
+df <- data.frame(choc1, choc2); head(df)
+#Thomas gets the Munchkins in positions 1, 2, and 3
+sum(((choc1 < 4)+(choc2<4)) == 0)/nrow(df)
+sum(((choc1 < 4)+(choc2<4)) == 1)/nrow(df)
+sum(((choc1 < 4)+(choc2<4)) == 2)/nrow(df)
+```
+
+# Permutation test for Munchkins
+
+* We can use our standard permutation test approach.
+```{r}
+ m <- 2  #number of type 1 objects (chocolate Munchkins)
+ n <- 4  #number of type 2 objects (plain Munchkins)
+ k <- 3  #number of Munchkins in Thomas's bag
+ Thomas <- c(rep(TRUE,k),rep(FALSE,m+n-k))   #ownership
+ Munchkins <- c(rep(TRUE,2),rep(FALSE,4))   #flavor
+ #Instead of making a row for each possible distribution and counting,
+ #we do a simulation.
+ N <- 10000; TC <- numeric(N)   #number of chocolate in Thomas's bag
+ for (i in 1:N){
+   scramble <- sample(Munchkins, m+n, replace = FALSE)  #permute the Munchkins
+   TC[i] <- sum(Thomas&scramble)
+ }
+ table(TC)/N    #will be close to the correct probability
+ #We can make a contingency table from our fabricated data
+ table(Thomas,Munchkins)
+ #It's too small for chi-square, but R can replicate our exact analysis
+ fisher.test(Thomas,Munchkins, alternative = "g")   #Probability of 2 or more chocolate
+ # Put just one Munchkin in Thomas's bag
+ Munchkins <- c(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE)
+ fisher.test(Thomas,Munchkins, alternative = "g")   #Probability of 1 or more chocolate
+ dhyper(0:2, m,n,k)   #mass function for the hypergeometric distribution
+ 1 - phyper(0:2,m,n,k)  #probability of more than 0, 1, 2
+ 
+ 
+ # This approach is better than chi-square for 2x2 tables.
+ 
+ GSS <- read.csv("GSSLogical.csv"); head(GSS);nrow(GSS)
+ attach(GSS)
+ table(Protestant, Republican)
+ m <- 239  #number of type 1 objects (Republican)
+ n <- 316  #number of type 2 objects (Democrats)
+ k <- 256  #number of Protestants
+ N <- 10000; RP <- numeric(N)   #number of Republican Protestants
+ for (i in 1:N){
+   scramble <- sample(Republican, m+n, replace = FALSE)  #permute the politics
+   RP[i] <- sum(Protestant&scramble)
+ }
+ hist(RP, breaks = 30)
+ mean(RP > 138)  #probability of 139 or more Protestant Republicans
+ fisher.test(Republican,Protestant, alternative = "g")
+ chisq.test(Republican,Protestant)   #this does a two-sided test
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

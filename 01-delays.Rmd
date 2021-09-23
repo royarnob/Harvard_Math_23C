@@ -1,0 +1,52 @@
+#Press Ctrl-Enter to run this app
+library(shiny)
+library(resampledata)
+df <- get("FlightDelays")
+#Get rid of ID column and any columns that are not factors
+df$FlightNo <- as.factor(df$FlightNo)
+factors <- df[,sapply(df, is.factor) & colnames(df) != "ID"]
+numerics <- df[,sapply(df, is.numeric) & colnames(df) != "ID"]
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("num", "Numeric Column", colnames(numerics)),
+        selectInput("factor", "Factor Column", colnames(factors)),
+        sliderInput(inputId = "bins",
+                  label = "Number of bins:",
+                  min = 5,
+                  max = 50,
+                  value = 20),
+        actionButton("btnHist", "Histogram for numeric column"),
+        actionButton("btnBar", "Barplot for factor column"),
+        actionButton("btnBox", "Boxplot for numeric against factor")
+      ),
+      mainPanel(
+        plotOutput(outputId = "plot")
+      )
+    )
+  )
+  server <- function(input, output) {
+   observeEvent(input$btnHist, {
+     output$plot <- renderPlot({
+       x    <- subset(df[,input$num],df[,input$num] < 300)
+       bins <- seq(-20, 300, length.out = input$bins + 1)
+       hist(x, breaks = bins, col = "#75AADB", border = "white",
+         xlab = input$num,
+         main = "", warn.unused = FALSE)
+      })
+    })
+    observeEvent(input$btnBar,{
+      output$plot <- renderPlot({
+        x <- df[,input$factor]
+        barplot(table(x))
+      })
+    })
+    observeEvent(input$btnBox,{
+      output$plot <- renderPlot({
+        formula <- as.formula(paste(input$num,"~",input$factor))
+        boxplot(formula, df, subset = df[,input$num] < 300)
+      })
+    })
+  }
+shinyApp(ui, server)
+

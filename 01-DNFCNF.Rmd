@@ -1,0 +1,64 @@
+#Click Ctrl-Enter to launch this shiny app
+library(shiny)
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(width = 5,
+        textInput("form1", "Logical Formula:", "p|(q&r)", width = "400px"),
+        textInput("disj", "DNF (look at the TRUE rows):", "(p&q&r)|(p&q&r)|(p&q&r)", width = "400px"),
+        textInput("conj", "CNF: (look at the FALSE rows)", "(p|q|r)&(p|q|r)&(p|q|r)", width = "400px"),
+        actionButton("btnForm","Evaluate Formula to create column f"),
+        actionButton("btnRand","Generate Random Truth Table for column f"),
+        actionButton("btnDNF","Test DNF for column f"),
+        actionButton("btnCNF","Test CNF for column f"),
+        actionButton("exit","Exit"),
+      ),
+      mainPanel(width = 7,
+      tableOutput("table")
+      )
+    ) 
+  )
+  challenge <- logical(8)
+  server <- function(input, output, session) {
+    eg <- expand.grid(c(TRUE,FALSE), c(TRUE,FALSE),c(TRUE,FALSE)); eg
+    #Reverse the columns and add some better column names
+    df <- data.frame(eg[,c(3:1)])
+    colnames(df) <- c('p', 'q', 'r')
+    # challenge <- sample(c(TRUE,FALSE),size = 8, replace = TRUE)
+    # df$f <- challenge
+    output$table<-renderTable(df)
+    observeEvent(input$btnRand,{
+      df$f <- challenge <<- sample(c(TRUE,FALSE),size = 8, replace = TRUE)
+      output$table<-renderTable(df)
+      updateTextInput(session, "form1", value = "Replaced by random truth table" )
+      updateTextInput(session, "disj", value = "(p&q&r)|(p&q&r)|(p&q&r)" )
+      updateTextInput(session, "conj", value = "(p|q|r)&(p|q|r)&(p|q|r)" )
+    })
+    observeEvent(input$btnForm,{
+      attach(df) #so formula can use p, q, and r
+      v1<- tryCatch(eval(parse(text=input$form1)),error=function(cond)return("error"))
+      detach(df)
+      df$f <- challenge <<- v1
+      updateTextInput(session, "disj", value = "(p&q&r)|(p&q&r)|(p&q&r)" )
+      updateTextInput(session, "conj", value = "(p|q|r)&(p|q|r)&(p|q|r)" )
+      output$table<-renderTable(df)
+    })
+    observeEvent(input$btnDNF,{
+      attach(df)
+      df$f <- challenge
+      v2<- tryCatch(eval(parse(text=input$disj)),error=function(cond)return("error"))
+      df$DNF <- v2
+      output$table<-renderTable(df  )
+    })
+    observeEvent(input$btnCNF,{
+      attach(df)
+      df$f <- challenge
+      v3<- tryCatch(eval(parse(text=input$conj)),error=function(cond)return("error"))
+      detach(df)
+      df$CNF <- v3
+      output$table<-renderTable(df  )
+    })
+    observeEvent(input$exit,{stopApp()})
+  }
+shinyApp(ui = ui, server = server, options = list(launch.browser=TRUE ))
+
+

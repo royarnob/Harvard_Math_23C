@@ -1,0 +1,31 @@
+#Click Ctrl-Enter to run this app
+library(shiny)
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("dt", "Choose one of the built-in datasets in R",
+        data()$results[,3])),
+      mainPanel(
+        p(textOutput("descr")),
+        tableOutput("table")
+    )  
+  )
+)
+description <- function(x) { 
+  helptext <-help(x)
+  t <- capture.output(tools:::Rd2txt(utils:::.getHelpFile(as.character(helptext))))  
+  tt <- paste(t[5:20], collapse = " ")
+  pos <- regexpr("_\bU",gsub("\\s+"," ",tt))
+  substr(gsub("\\s+"," ",tt),1,pos-2)
+}
+server <- function( input, output, session) {
+  dataset <- eventReactive(input$dt, 
+                           {
+                             get(input$dt)
+                           }, 
+                           ignoreNULL = FALSE)
+  output$table <- renderTable(dataset())
+  output$descr <- renderText(description(input$dt))
+}
+shinyApp(ui, server)
+

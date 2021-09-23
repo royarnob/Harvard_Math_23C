@@ -1,0 +1,16 @@
+library(datasets)
+library(shiny)
+    ui = fluidPage(
+      fluidRow(
+        column(12,
+          tableOutput('table')
+        )
+      )
+    )
+    server = function(input, output) {
+      output$table <- renderTable(trees)
+    }
+shinyApp(ui, server, options = list(launch.browser = TRUE))
+
+
+

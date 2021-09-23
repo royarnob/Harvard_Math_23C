@@ -1,0 +1,1014 @@
+---
+title: "Math 23c - Week 1"
+author: "Paul Bamberg"
+output:
+  slidy_presentation:
+    font_adjustment: +1
+    incremental: true
+    widescreen: true
+  classoption: aspectratio=169
+runtime: shiny
+---
+<style type="text/css">
+body p {
+  color: DarkBlue;
+  font-size:smaller
+}
+div.slide h1 {
+  color: DarkRed;
+  font-size: 100%;
+}
+body h2 {
+  color: DarkGreen
+  font-size: smaller
+}
+</style>
+
+  
+```{r setup, include=FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
+```
+
+
+
+# Conventional logic using Boolean algebra  
+
+* A propositional (Boolean) variable $p$ has the value "true" ($T$) or "false" ($F$).   
+
+* A logical function takes one or more Boolean values as arguments and returns a Boolean value.   
+It is completely specified by its "truth table."
+
+* The function NOT $(\lnot)$ reverses the truth value of its one argument.
+Here is its truth table.
+\large
+$$\begin{array}{|c|c|}
+\hline
+ p   &  \lnot p \\
+\hline
+T &  F   \\
+\hline
+F &  T    \\
+\hline
+\end{array}$$
+\normalsize
+
+# The functions OR and AND
+* The function OR $(\lor)$ returns "true" if either of  its arguments is true (or if both are true).  Here is its truth table.
+\large
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p \lor q \\
+\hline
+T & T  & T      \\
+\hline
+T& F  &  T    \\
+\hline
+F & T  &  T     \\
+\hline
+F & F & F  \\
+\hline
+\end{array}$$
+\normalsize
+
+* The function AND $(\land)$ returns "true" only if both its arguments are true.  Here is its truth table.
+\large
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p \land q \\
+\hline
+T & T  &   T  \\
+\hline
+T& F  &  F  \\
+\hline
+F & T  &   F    \\
+\hline
+F & F & F \\
+\hline
+\end{array}$$
+\normalsize
+
+# Generating truth tables in R
+* For a function with precisely two arguments, the R function    
+```outer(x,y)``` takes two vectors whose components are all possible arguments and makes a matrix of function values.
+
+* Here is a way to generate the multiplication facts for the finite field $\mathbb{Z}_3$.
+```{r, echo = TRUE} 
+  "%*3%" <- function(a,b) (a*b)%%3
+  outer(0:2,0:2,"%*3%")
+```
+
+* We can define a function in R that implements the "and" operation.
+```{r }
+And <- function(x,y) x&y
+outer(c(TRUE,FALSE), c(TRUE,FALSE), And)
+```
+
+# Truth tables from the logical operators
+* We can use `outer` to confirm that in R the operators & and | represent AND and OR respectively.
+```{r}
+outer(c(TRUE,FALSE), c(TRUE,FALSE), "&")
+outer(c(TRUE,FALSE), c(TRUE,FALSE), "|")
+```
+
+*  When applied to single variables (but not vectors) the operators && and || also represent AND and OR
+```{r}
+TRUE&&TRUE; TRUE&&FALSE; FALSE&&TRUE; FALSE&&FALSE
+TRUE||TRUE; TRUE||FALSE; FALSE||TRUE; FALSE||FALSE
+```
+
+* With single truth values you can use either operator.
+```{r}
+(2 > 3) && (2 > 0); (2 > 3) & (2 > 0)  #works with single truth values
+(2 > 3) || (2 > 0); (2 > 3) | (2 > 0)  #works with single truth values
+```
+
+* Only & and | are "vectorized" and can be applied component by component to vectors.
+```{r}
+c(TRUE, FALSE) & c(TRUE, TRUE)     #single & works component by component on vectors
+c(TRUE, FALSE) && c(TRUE, TRUE)     #double && fails  -- it uses just the first component
+c(TRUE, FALSE) | c(TRUE, TRUE)     #single | works component by component on vectors
+c(TRUE, FALSE) || c(TRUE, TRUE)     #double || fails  -- it uses just the first component
+```
+
+# Many formulas for the same function
+* Recall that $\cos{2x}$, $\cos^2{x}-\sin^2{x}$, $2\cos^2{x}-1$, and $1-2\sin^2{x}$ 
+are different formulas for the same trig function.
+
+* Similarly, a logical function can often be written in different ways in terms of NOT, AND, and OR.  
+To prove that two formulas define the same function, just show that they generate the same truth table.
+
+* If two formulas define the same logical function, it is conventional to call the two formulas "equivalent" and use the symbol $\equiv$ instead of =.  
+Here is a brute-force proof that $\lnot(p \land q) \equiv \lnot p \lor \lnot q$.
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|}
+\hline
+ p  &q & p \land q & \lnot(p \land q) & \lnot p & \lnot q &  \lnot p \lor \lnot q  \\
+\hline
+T & T  &  T & F & F & F & F  \\
+\hline
+T& F  & F  & T & F & T & T  \\
+\hline
+F & T  & F & T  & T  & F & T     \\
+\hline
+F & F & F & T & T & T & T \\
+\hline
+\end{array}$$
+ 
+
+
+# Functions with more than two arguments
+
+* With three variables, the truth table has eight rows. It provides a brute-force way of proving  ``laws'' of Boolean algebra.
+
+* Example: Prove by truth table the ``distributive law''  
+$p \lor (q \land r) \equiv (p \lor q) \land (p \lor r)$
+
+
+\large
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|c|}
+\hline
+ p  &q & r & q \land r & p \lor (q \land r) & (p \lor q) & (p \lor r) &   (p \lor q) \land (p \lor r)  \\
+\hline
+T & T  &   T& T &T & T& T& T  \\
+\hline
+T & T  &  F & F & T & T & T & T  \\
+\hline
+T& F  &  T& F & T & T & T & T  \\
+\hline
+T& F  &  F& F & T & T & T & T  \\
+\hline
+F & T  & T & T & T & T & T & T    \\
+\hline
+F & T  & F & F & F & T & F & F    \\
+\hline
+F & F & T& F & F & F & T & F  \\
+\hline
+F & F & F& F & F & F & F & F \\
+\hline
+\end{array}$$
+\normalsize
+
+# Using R to generate truth tables
+* The function ```expand.grid()``` is similar to ```outer()```, but it accepts more than two arguments and builds a dataframe rather than a matrix.
+
+```{r }
+expand.grid(c(TRUE,FALSE), c(TRUE,FALSE))
+eg <- expand.grid(c(TRUE,FALSE), c(TRUE,FALSE),c(TRUE,FALSE)); eg
+#Reverse the columns and add some better column names
+ttbl <- data.frame(eg[,c(3:1)]); ttbl
+colnames(ttbl) <- c('p', 'q', 'r'); ttbl
+#Now we can add columns to show the result of logical operations
+attach(ttbl)
+ttbl$op1 <- (p | q)&r  ;ttbl
+ttbl$op2 <- (p&r) | (q&r); ttbl
+#We can even generate random logical functions
+ttbl$rand1 <- sample(c(TRUE,FALSE),8, replace = TRUE)
+ttbl$rand2 <- sample(c(TRUE,FALSE),8, replace = TRUE); ttbl
+```
+
+# Designing logic circuits
+* At the lowest level, computers operate on individual bits, and an operation like the addition of the binary numbers 0011 (3) and 0111 (7) to get 1010 (10) can be reduced to AND and OR.   
+For example, to get the rightmost bit of the sum, you apply XOR to the rightmost bits of the numbers being added. To determine whether there is a 1 that must be carried into the next position on the left, you apply AND .  
+$0011$  
+$\underline{\text{0111}}$  
+$1010$  
+
+* It appears at first that in order to build an electronic circuit that implements an arbitrary Boolean function, you would need to have bulding blocks ("gates" ) that implement NOT, OR, and AND. Remarkably, though,  all three of these functions can be expressed in terms of the function NAND (NOT AND). Let's represent this operation by the symbol ``$\uparrow$'': 
+it is defined by $p \uparrow q\equiv \lnot(p \land q) \equiv (\lnot p\vee\lnot q)$.
+ 
+* Here are some functions that use only the $\uparrow$ operator, TRUE, FALSE, and parentheses.
+ 
++ $\lnot p \equiv p \uparrow TRUE$
+
++ $p \land q \equiv \lnot (p \uparrow q) \equiv (p \uparrow q) \uparrow TRUE$
+ 
+
+# Building circuits using nothing but NAND gates
+
+* A NAND gate has two inputs, each of which may be a constant (TRUE or FALSE) or the output of another NAND gate. 
+Since any logical function can be written using only the NAND function, any logical circuit can be constructed using nothing but NAND gates.
+
+* Here, for example, is how you could wire together three NAND gates to form an OR gate.
+
+  + Gate 1 computes the function NAND(p, TRUE) 
+  
+  + Gate 2 computes the function NAND(q, TRUE)
+  
+  + Gate 3 evaluates NAND(Gate1, Gate2)
+
+* The following truth table proves that the circuit is correct.
+\begin{array}{|c|c|c|c|c|}
+\hline
+ p   &  q  & G1 = p \uparrow T  & G2 = q \uparrow T & G1 \uparrow G2\\
+\hline 
+T &  T  & F & F  & T\\
+\hline
+T &  F  & F & T  & T  \\
+\hline
+F & T   & T & F &  T  \\
+\hline
+F & F   & T & T & F   \\
+\hline
+\end{array}
+
+
+# Standard forms for propositional formulas
+
+* For a polynomial function of variables $x$ and $y$, we can multiply out all the factors, so that all multiplication is done before any addition:
+$$(1 + x)^2(x+y) = (1 + 2x + x^2)(x + y) = x + 2x^2 + x^3 +y + 2xy + x^2y$$
+* Think of OR as like addition, AND as like multiplication, and we get  
+**Disjunctive form**: ORs of AND-terms, where each AND-term consists of variables (or negations of variables).   
+* Example: $$(p \land q) \lor (p \land r) \lor (q \land \lnot r \land s) $$
+ 
+# Conjunctive form
+* The alternative, not always possible in algebra, is to factor so that addition is done before multiplication:
+$$1 + x + y + xy = (1+x)(1+y)$$
+
+* This leads to 
+ **Conjunctive form**: ANDs of OR-terms, where each OR-term consists of variables (or negations of variables). 
+
+* Example: $$(p \lor q) \land (p \lor r) \land (q \lor \lnot r \lor s) $$
+
+# Disjunctive normal form
+ * A truth table specifies a Boolean function completely. We can convert it to a Boolean expression in disjunctive **normal** form: like the disjunctive form, but with the restriction that every AND-term must include **each** variable (or negation of that variable).
+  
+* Example: $f(p,q,r) = (q \land \lnot  r)$ (not normal - no mention of $p$)  
+$f(p,q,r) = (p \land q \land \lnot r) \lor  (\lnot p \land q \land \lnot r)$ (disjunctive normal)
+
+* Here are the TRUE lines in the truth table. Each leads to one factor in the DNF.
+\begin{array}{|c|c|c|c|}
+\hline
+   p  &q & r & f \\
+\hline
+T &  T  &  F  & T\\
+\hline
+F  &  T  &  F  & T \\
+\hline
+\end{array}
+
+# Conjunctive normal form
+* The alternative, where OR is done before AND, is conjunctive **normal** form: like conjunctive form, but with the restriction that every OR-term must  include **each** variable (or negation of that variable).
+
+* Example: $f(p,q,r) = (q \lor \lnot r) \land (p \lor \lnot q)$ (conjunctive but not normal - no mention of $p$ in first factor or $r$ in second)    
+$f(p,q,r) = (p \lor q \lor \lnot r) \land  (\lnot p \lor q \lor \lnot r) \land (p \lor \lnot q \lor r) \land  (p \lor \lnot q \lor \lnot r)$ (conjunctive normal).
+
+* Here are the FALSE lines in the truth table. Each leads to one factor in the CNF.
+\begin{array}{|c|c|c|c|}\hline
+p  &q & r & f \\
+\hline
+F &  F  &  T  & F\\
+\hline
+T  & F   &  T  & F \\
+\hline
+F  & T   &  F  & F \\
+\hline
+F  & T   &  T  & F \\
+\hline
+\end{array}
+
+
+
+# Disjunctive or conjunctive normal form from a truth table
+
+* Here is the truth table for "exclusive OR". 
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p \oplus q \\
+\hline
+T & T  &   F  \\
+\hline
+T& F  &  T  \\
+\hline
+F & T  &    T   \\
+\hline
+F & F & F \\
+\hline
+\end{array}$$
+
+* To express  $p \oplus q$ in disjunctive normal form we focus on the "true" lines and get $(p \land \lnot q) \lor (\lnot p \land q)$
+
+* To express $p \oplus q$ in conjunctive normal form we write similar expressions for the "false" lines and form the "and" of their negations, then apply De Morgan's law.
+$\lnot(p \land q) \land \lnot (\lnot p \land \lnot q) = (\lnot p \lor \lnot q) \land (p \lor q)$
+
+* Alternative: express $p \oplus q$ in conjunctive normal form by writing an expression with "or" for each "false" line that kills one of the input conditions for that line.  
+Then form the "and" of these expressions.   
+$(\lnot p \lor \lnot q) \land (p \lor q)$
+
+# Disjunctive/conjunctive vs. disjunctive/conjunctive normal
+* As a function of $p, q,$ and $r$, the function $f(p,q,r) = r$ is not in any sort of normal form because it does not mention $p$ and $q$.
+$$
+\begin{array}{|c|c|c|c|c|c|c|c|c|}
+\hline
+ &  p  &q & r  \\
+\hline
+1 & T & T  &   T  \\
+\hline
+2 & T & T  &  F   \\
+\hline
+3 & T& F  &  T  \\
+\hline
+4 & T& F  &  F  \\
+\hline
+5 & F & T  & T     \\
+\hline
+6 & F & T  & F      \\
+\hline
+7 & F & F & T  \\
+\hline
+8 & F & F & F  \\
+\hline
+\end{array}$$
+
+
+
+
+* Here is the disjunctive normal form. Each term matches a "true" line in the truth table.  
+$r  \equiv (p \land q \land  r)  \lor (\lnot p \land q \land r)\lor (p \land \lnot q \land r)\lor (\lnot p \land \lnot q \land r).$
+
+
+* Here is the conjunctive normal form. Each term matches a "false" line in the truth table. 
+$r  \equiv (p \lor q \lor  r)  \land  (p \lor \lnot q \lor  r)\land  (\lnot p \lor q \lor  r)\land (\lnot p \lor \lnot q \lor  r).$
+
+# Practice with disjunctive and conjunctive normal form
+ >* Here is an app written in R Shiny to provide practice in converting a truth table to disjunctive normal form (using the true lines) or conjunctive normal form (using the false lines)
+
+```{r, echo = FALSE}
+library(shiny)
+shinyAppFile("01-DNFCNF.Rmd",
+             options = list(width = "100%", height = 700)
+)
+```
+
+
+# Dealing with "implies"
+
+* Given that $p \implies q$, the one and only case that is ruled out is that $p$ is true and $q$ is false.  
+Equivalently, the proposition $p \land \lnot q$ is false, and its negation $\lnot (p \land \lnot q)$ is therefore true.  
+So $p \implies q \equiv \lnot (p \land \lnot q) \equiv \lnot p \lor q$.    Here is the truth table for "implies":
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p \implies q \\
+\hline
+T & T  &   T  \\
+\hline
+T& F  &  F  \\
+\hline
+F & T  &    T   \\
+\hline
+F & F & T \\
+\hline
+\end{array}$$
+
+* As the truth table shows, if $p$ is false, then "$p \implies q$" is automatically true.   
+ On page 5 of Hubbard is the example where $p$ is the statement "A certain alligator has 11 legs" and $q$ is  "That alligator is orange with blue spots"
+
+* In this case "$p \implies q$" is true, and as the Hubbards point out, it remains true if $q$ is changed to "That alligator is black with white stripes" or even to something patently false like
+"That alligator is both a reptile and a mammal."
+
+* We can easily prove the law of contraposition: $(\lnot q \implies \lnot p) \equiv (p \implies q)$.
+
+* $(\lnot q \implies \lnot p) \equiv \lnot(\lnot q) \lor \lnot p \equiv \lnot p \lor q \equiv (p \implies q)$.
+
+# If and only if
+* Here is the truth table for ``if and only if,'' $\Leftrightarrow$:
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p \Leftrightarrow q \\
+\hline
+T & T  &   T  \\
+\hline
+T& F  &  F  \\
+\hline
+F & T  &    F   \\
+\hline
+F & F & T \\
+\hline
+\end{array}$$
+
+* We can write it in either disjunctive or conjunctive normal form.
+
++ Disjunctive normal form : $(p \land q) \lor (\lnot p \land  \lnot q)$
+
+ + Conjunctive normal form: $\lnot(p \land \lnot q) \land \lnot (\lnot p \land q) \equiv (\lnot p \lor q) \land (p \lor \lnot q)$
+
+
+ + Conjunctive normal form using ``implies'': $(p \implies q) \land (q \implies p)$
+
+
+
+# Review of axioms for a field
+
+
+1. Addition is commutative: $a+b = b+a$.
+2. Addition is associative: $(a+b)+c = a + (b+c)$. 
+3. Additive identity: $\exists 0$ such that $\forall a \in F, 0 + a = a + 0 = a$.
+4. Additive inverse: $\forall a \in F, \exists -a$ such that $-a + a = a + (-a) =0$.
+5. Multiplication is associative: $(ab)c = a(bc)$.
+6. Multiplication is commutative: $ab = ba$.
+7. Multiplicative identity: $\exists 1$ such that $\forall a \in F, 1a = a$.
+8. Multiplicative inverse: $\forall a \in F-\{0\}, \exists a^{-1}$ such that $a^{-1}a  =1$.
+9. Distributive law: $a(b+c) = ab + ac$.
+
+ 
+
+* The smallest possible field is $\mathbb{Z}_2$, which includes only the additive identity 0 and the multiplicative identity 1. The rule for arithmetic in this field is `"after adding or multiplying, divide by 2 and keep the remainder." The only case where this rule changes the answer from ordinary arithmetic is  
+1 + 1 = 0.
+
+# Doing logic by using the finite field $\mathbb{Z}_2$
+* 0 represents "false"; 1 represents "true."
+
+* The addition facts are $0 + 0 = 0, 0 + 1 = 1 + 0 = 1, 1 + 1 =0$.  
+ These show that $1+p$ represents "NOT $p$".
+ 
+* Since $1 + 1 = 0$, each element is its own additive inverse.  
+Thus $-a = a$ (i.e. $a+a = 0$) for any element of the field.
+
+* The multiplication facts are $0 \times 0 = 1 \times 0 = 0 \times 1 = 0, 1 \times 1 = 1$ .  
+Thus $a^2 = a$ and $a(1+a) = 0$ for any element of the field.  
+
+* Since  $\mathbb{Z}_2$ is a field, all the rules of ordinary algebra apply, just as if you were computing with rational numbers. 
+
+* Now logic becomes the study of functions from $(\mathbb{Z}_2)^n$ to $\mathbb{Z}_2$  
+In the case where $n = 2,$ a function of the form   $f\begin{pmatrix} p \\ q \end{pmatrix}$ corresponds to a formula in Boolean algebra that involves Boolean variables $p$ and $q$. We can identify the formula by substituting all possible values for $p$ and $q$: by writing out the truth table.
+
+
+# Familiar logical operators represented as functions in $\mathbb{Z}_2$
+
+* The function $f(p) = 1 + p$ generates the truth table for NOT:
+\begin{array}{|c|c|}
+\hline
+ p   &  1 + p \\
+\hline
+1 &   0   \\
+\hline
+0 &  1   \\
+\hline
+\end{array}
+
+* The function $f\begin{pmatrix} p \\ q \end{pmatrix} = p + q + pq$ generates the truth table for OR:
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p+q+pq \\
+\hline
+1 & 1 &    1    \\
+\hline
+1& 0  &  1   \\
+\hline
+0 & 1  &   1    \\
+\hline
+0 & 0 & 0  \\
+\hline
+\end{array}$$
+
+* The function $f\begin{pmatrix} p \\ q \end{pmatrix} = pq$ generates the truth table for AND:
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & pq \\
+\hline
+1 & 1  &  1   \\
+\hline
+1& 0  & 0   \\
+\hline
+0 & 1  &   0    \\
+\hline
+0& 0 & 0 \\
+\hline 
+\end{array}$$
+
+# More logical operations in $\mathbb{Z}_2$
+
+* The function $f\begin{pmatrix} p \\ q \end{pmatrix} = 1 + p + pq$ generates the table for IMPLIES:
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & 1 + p + pq \\
+\hline
+1 & 1  &  1   \\
+\hline
+1& 0  &  0  \\
+\hline
+0 & 1  &   1    \\
+\hline
+0& 0 & 1 \\
+\hline
+\end{array}$$
+
+* The function $f\begin{pmatrix} p \\ q \end{pmatrix} =  p +q$ generates the truth table for XOR:
+$$
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & p + q\\
+\hline
+1 & 1  &  0   \\
+\hline
+1& 0  &  1  \\
+\hline
+0 & 1  &  1     \\
+\hline
+0& 0 & 0 \\
+\hline
+\end{array}$$
+
+
+
+# Counting the functions:
+
+
+* For two variables $p$ and $q$ there are four rows in the truth table.  
+There are $2^4 = 16$ possible truth tables.   
+All functions are of the form $a_1 + a_2p + a_3q + a_4pq$ where each $a_i$ has the value 0 or 1.   
+There are $2^4 = 16$ possible functions.
+
+* For three variables $p$, $q$, and $r$ there are eight rows in the truth table.  
+There are $2^8 = 256$ possible truth tables.  
+Functions are of the form $a_1 + a_2p + a_3q + a_4r + a_5 pq + a_6 pr+ a_7 qr + a_8 pqr$ where each $a_i$ has the value 0 or 1.   
+There are $2^8 = 256$ possible functions.
+
+
+# Logic proofs and calculations using finite fields
+* If a logical expression is a tautology, true independent of the values of the function arguments, it simplifies to 1.
+
+* If two logical expressions involving $p$ and $q$ are equivalent, they are represented by the same function from $\mathbb{Z}_2^2$ to  $\mathbb{Z}_2$.
+ 
+* Since in $\mathbb{Z}_2$, $a + a = 0$ for any element $a$, two logical expressions involving $p$ and $q$ are equivalent if and only if their sum simplifies to 0.
+ 
+
+# Examples
+* Show, using both conventional logic and $\mathbb{Z}_2,$ that
+ $p \lor \neg p$ is a tautology.
+\begin{array}{|c|c|c|}
+\hline
+ p   &  \lnot p &  p \lor \lnot p \\
+\hline
+T & F  &  T\\
+\hline
+F & T &  T  \\
+\hline
+\end{array}
+$p + (1+p) + p(1+p) = p + 1 + p + p + p^2 = p + 1 + p + p + p = 1$ 
+
+* Show that $p \implies T$ is a tautology.  
+$\lnot p \lor T$ becomes $(1+p)+1+(1+p)1 = 1+p+1+1+p = 1$
+
+* We know how to use a truth table to prove one of De Morgan's laws,   $\lnot(p \land q) \equiv \lnot p \lor \lnot q$.  
+ Now do a calculation in $\mathbb{Z}_2$ to show that $\neg(p \lor q)\equiv \neg p \land \neg q$.  
+$1 + (p + q+ pq)+ (1+p)(1+q) = 1 + p + q +pq + 1 + p +q + pq = 0$
+ 
+ 
+*  We earlier used a truth table with eight rows to prove the distributive law $p \lor (q \land r) \equiv (p \lor q) \land (p \lor r)$. 
+Prove the other distributive law $p \land (q \lor r) \equiv (p \land q) \lor (p \land r)$ in $\mathbb{Z}_2$.   Exploit the fact that if $f\begin{pmatrix}p \\ q \\ r \end{pmatrix}$ and $g\begin{pmatrix}p \\ q \\ r \end{pmatrix}$ are the same functions with codomain  $\mathbb{Z}_2$, their sum must be the zero function.   
+$p (q + r + qr) + pq + pr + (pq)(pr)\\ = pq+ pr + pqr + pq + pr + pqr = 0.$
+
+# The bijection between truth tables and functions in $\mathbb{Z}_2$
+ 
+* Going from the function to the truth table is mechanical. You must then convert the truth table to a Boolean expression. Sometimes there is a clever shortcut.
+
+* For example, we can factor the function $f = 1 + p + q + pq$ as $f = (1+p)(1+q)$.  
+That makes it clear that in terms of conventional logic notation, $f(p,q) = (\lnot p) \land (\lnot q)$.
+It is easy to confirm the answer by reconstructing the truth table.
+
+
+\begin{array}{|c|c|c|c|}
+\hline
+ p  &q & 1+ p + q + pq & (\lnot p) \land (\lnot q) \\
+\hline
+1 & 1  & 0 &  F \\
+\hline
+1& 0  & 0 & F \\
+\hline
+0 & 1  & 0   & F  \\
+\hline
+0& 0 & 1 & T\\
+\hline
+\end{array}
+
+
+# Using normal form to convert a truth table
+* Going from the truth table to the function is harder. One approach is to use disjunctive normal form if there are fewer "true" rows, conjunctive normal form if there are fewer "false" rows, then to simplify the resulting Boolean expression.
+\small
+\begin{array}{|c|c|c|}
+\hline
+ p  &q & r & f(p,q,r)\\
+\hline
+T & T  &   T& F\\
+\hline
+T & T  &  F &  T\\
+\hline
+T& F  &  T& F \\
+\hline
+T& F  &  F&  F\\
+\hline
+F & T  & T & T\\
+\hline
+F & T  & F & F\\
+\hline
+F & F & T&  T\\
+\hline
+F & F & F& F\\
+\hline
+\end{array}
+\normalsize 
+
+
+* From rows 2, 5, and 7 we construct the disjunctive normal form.
+$(p \land q \land \lnot r) \lor (\lnot p \land q \land r) \lor(\lnot p \land \lnot q \land r )$  
+Then a tedious computation converts this to $r + pq + pr +pqr$.
+
+# A better way to convert a truth table to a function
+
+\begin{array}{|c|c|c|c|c|c|c|c|}
+\hline
+ p  &q & r & f(p,q,r) & pq & pr & pqr & r +pq+pr+pqr\\
+\hline
+1 & 1  &   1& 0 & 1&1 &1& 0\\
+\hline
+1 & 1  &  0 &  1& 1&0 &0& 1\\
+\hline
+1& 0  &  1& 0& 0&1 &0& 0 \\  
+\hline
+1& 0  &  0&  0& 0&0 &0& 0\\
+\hline
+0 & 1  & 1 & 1& 0&0 &0& 1\\
+\hline
+0 & 1  & 0 & 0& 0&0 &0& 0\\
+\hline
+0 & 0 & 1&  1& 0&0 &0& 1\\
+\hline
+0 & 0 & 0& 0& 0&0 &0& 0\\
+\hline
+\end{array}
+
+ * To find the coefficient of a term like $p$, look at the rows where the other variables are all false (rows 4 and 8). Add up the truth values to get 0, the coefficient of $p$.   
+For the coefficient of $r$, sum the truth values in the rows where $p$ and $q$ are false (rows 7 and 8) to get 1, the coefficient of $r$.  
+To find the coefficient of a term like $pq$, look at the rows where the other variable $r$ is false (rows 2, 4, 6 and 8). Add up the truth values to get 1, the coefficient of $pq$.  
+For $pr$ get 1 also, but for $qr$ look at rows 5-8, where $p$ is false, and get 0.  
+For 1 sum over all rows where the variables are all false (just row 8) and get 0.  
+ For $pqr$ sum over all rows and get 1.
+ 
+* Conclusion: the function that generates this truth table is $r + pq + pr +pqr$
+
+# Practice with converting a truth table to a formula
+* Here is another app written in R Shiny.
+
+```{r, echo = FALSE}
+library(shiny)
+shinyAppFile("01-TruthTablesZ2.Rmd",
+             options = list(width = "100%", height = 700)
+)
+```
+
+
+
+# Using $\mathbb{Z}_2$ to verify a syllogism
+
+* A cornerstone of logic is that the propositions "Socrates is a man" and "All men are mortal" together imply "Socrates is mortal."
+
+* In this case there are three propositions: 
+
+ + Let $f \begin{pmatrix}p\\q\\r  \end{pmatrix} = 1 + p + pq$ (i.e. $p \implies q$).
+ 
+ + Let $g \begin{pmatrix}p\\q\\r  \end{pmatrix} = 1 + q + qr$ (i.e. $q \implies r$).
+ 
+ + Let $h \begin{pmatrix}p\\q\\r  \end{pmatrix} = 1 + p+ pr$ (i.e. $p \implies r$).
+
+* Here is a proof that $(f \wedge g) \implies h$.  
+
++ Step 1: $f \land g = (1 + p + pq)(1 + q + qr) = 1 + p + pq + q + pq+ pq+ qr+ pqr+pqr=1 + p +q + pq + pr$
+
++ Step 2: $\lnot(f \land g) \lor h = (p +q + pq + pr) + (1 + p + pr) + (p +q + pq + pr)  (1+  p + pr) = 1$
+
+
+
+# Propositions, predicates, and quantifiers
+* A proposition $P$ is like a boolean variable. Its value is either "true" or "false." 
+
+* A predicate $P(x)$ is like a boolean-valued function. It may have the value "true" for some values of $x$ and the value "false" for others.
+
+* A predicate can have more than one argument; e.g. Enrolled($x, y$) might mean "student $x$ is enrolled in course $y$." 
+
+* It is important to know the (possibly infinite) set of values $D$ that $x$ and $y$ might assume (the domain of the function). 
+
+* The existential quantifier: $\exists x \mbox{ s.t. }P(x)$ or $\exists x P(x)$ means  
+" there exists at least one $x$ in the domain $D$ such that $P(x)$ is true."
+
+* The universal quantifier: $\forall x P(x)$ means  
+ "for every $x$ in the domain $D$, $P(x)$ is true."
+
+# Negation of quantifiers 
+ * Here are the rules for negation of propositions with quantifiers:
+
+   - $\neg (\exists x \text{ such that } P(x)) \iff \forall x (\neg P(x))$.
+   - $\neg (\forall x  P(x)) \iff \exists x \text{ such that } (\neg P(x))$.
+
+ 
+
+# Multiple quantifiers
+ 
+
+*  $\exists x P(x)$ and $\forall x P(x)$ are both propositions, not predicates.
+
+*  $\exists x P(x,y)$ and $\forall x P(x,y)$ are both predicates of the form $Q(y)$.
+
+* $\exists x \exists y P(x,y)$ and $\forall x \forall y P(x,y)$ are both propositions.  
+The order of the quantifiers is irrelevant.
+
+* $\exists x \forall y P(x,y)$ and $\forall y \exists x P(x,y)$ are both propositions, but they are different!
+The order of the quantifiers is important. 
+
+* Example 1: In a field, $P(x+y)$ is $x + y = y$.  
+The additive identity axiom is $\exists x \forall y P(x,y)$, not $\forall y \exists x P(x,y)$.
+
+* Example 2: In a field, $P(x+y)$ is $x + y = 0$.
+The additive inverse axiom is $\forall y \exists x P(x,y)$, not $\exists x \forall y P(x,y)$.
+ 
+
+# An innocent-looking challenge
+* Use quantifiers to express the statement  
+"There exists one and only one value of $x$ for which $P(x)$ is true."
+
+* There are several ways to do this.
+
+  + $\exists x  (P(x) \land \forall y (y \neq x \implies \lnot(P(y)))$
+  
+  + $\exists x  (P(x) \land (\forall y (y = x) \lor \lnot P(y))$
+   
+  + $\exists x \forall y P(y) \Leftrightarrow (y = x)$
+  
+  + $\exists! x P(x)$
+
+
+# Using predicates to express statements in English - an example
+
+*  Start by specifying the domain of discourse, in this case "all people."
+Let the predicate $H(x)$ mean that "$x$ is happy," and let the predicate $L(x,y)$ mean that "$x$ loves $y$."  
+
+
+* At least one person is happy.  $\exists x H(x)$
+
+
+* At least two people are happy.  $\exists x \exists y H(x) \land H(y) \land (x \neq y)$
+
+* At least one person is unhappy.  $\exists x \lnot H(x)$
+ 
+* Exactly one person is happy.  $\exists x \forall y H(y) \Leftrightarrow (y = x)$
+
+* Not everyone loves someone else (we can write this in several different ways).
+
+  + $\lnot(\forall x \exists y (y \neq x) \land L(x,y))$
+  
+  + Apply the negation rule: $\exists x [\lnot\exists y (y \neq x) \land L(x,y)]$
+  
+  + Apply the negation rule again: $\exists x \forall y (\lnot(y \neq x \land L(x,y))$
+  
+  + Apply the negation rule one last time: $\exists x \forall y (y = x \lor \lnot L(x,y))$
+
+# Viewing a dataframe
+* "trees" is just one of many datasets available as part of the "datasets" package in R.
+
+Here is a very short Shiny app that displays the dataframe.
+```{r, echo = FALSE}
+library(shiny)
+shinyAppFile("01-viewTrees.Rmd",
+             options = list(width = "100%", height = 700)
+)
+```
+
+# Exploring a numeric dataframe
+* A dataframe is simply a list of columns. Each column is a vector.
+Having two dimensions, the dataframe can be treated almost like a matrix.
+```{r echo = TRUE}
+#Show just the first six rows
+head(trees)
+#Select a single column (a vector)
+trees$Volume
+#Select a subset of the columns (a smaller dataframe)
+head(trees[,c("Girth","Volume")])
+head(trees[,c(1,3)])
+#Select a single row (a list)
+trees[5,]
+#Treat this as a vector if you wish
+max(trees[5,])
+#Select a range of rows (a smaller dataframe)
+trees[1:10,]
+#Select a range of rows by condition
+subset(trees,Height > 75)
+#Select a range of rows by condition and a subset of columns
+subset(trees,Height > 75,select=c("Height","Volume"))
+```
+# Using logical operators to do selection 
+* When mathematical operators like ==, <, and > are applied to numerical vectors, they operate component by component to produce a logical vector.
+
+* When logical operators like & and | are applied to logical vectors, they operate component by component to produce a new logical vector.
+
+* So in R, it is easy to operate simultaneously on every row of a dataframe.
+
+```{r}
+#We can easily determine. for each tree, whether it is large both in diameter and height.
+isBig <-(trees$Girth > 12) & (trees$Height > 75); head(isBig)  #logical vector
+#Exploit the fact that TRUE gets converted to 1.
+sum((trees$Girth > 12) & (trees$Height > 75))  #the number of big trees
+#Get the row numbers for the big tall trees.
+which((trees$Girth > 12) & (trees$Height > 75))
+#Make a smaller table that includes just these trees.
+trees[which((trees$Girth > 12) & (trees$Height > 75)),]
+#Alternative way to select this subset
+subset(trees,(Girth > 12) & (Height > 75))
+#Find the smallest tree by each criterion
+attach(trees)  #allows us to use just the column name
+head(Girth)
+idx <- which((Girth==min(Girth))|(Height==min(Height))|(Volume==min(Volume)))
+trees[idx,]
+detach(trees)    #always a good precaution
+```
+
+# Exploring a dataframe with factor columns
+* All the datasets mentioned in the Chihara & Hesterberg statistics textbook have been made available as a package in R.
+Here is a list of the names of all the datasets in this package.
+```{r, echo = TRUE}
+#install.packages("resampledata")    #run this just once
+library(resampledata)
+data(package="resampledata")$results[,3]
+```
+* Here are the first few rows of one of the General Social Survey datasets.  
+This is a dataframe with no numeric columns. For any column we can make a table of the "factors" that appear.
+```{r, width = "100%"}
+head(GSS2006)
+table(GSS2006$Region)
+table(GSS2006$Politics)
+#We can show these tables graphically as barplots
+barplot(table(GSS2006$Region))
+barplot(table(GSS2006$Politics))
+#From two factors we can make a contingency table
+table(GSS2006$Region, GSS2006$Politics)
+#We can form a subset by using logical operators
+MyGSS <- subset(GSS2006,(Region=="Mountain")&(Politics=="Liberal"),select = c(Religion,Income,Pres04))
+head(MyGSS)
+```
+
+# Exploring a dataframe with both numeric and factor columns
+* This mix is possible because a dataframe is a list(not a vector) of columns.
+```{r}
+head(NCBirths2004)
+attach(NCBirths2004)
+#R has many useful functions for analyzing a numeric column
+median(Weight)
+mean(Weight)
+max(Weight)
+hist(Weight, breaks = 20)
+#Here is a compendium of results
+summary(Weight)
+#and a way to display it graphically
+boxplot(Weight)
+#For the factor columns we still have tables and barplots
+table(MothersAge)
+barplot(table(MothersAge))
+#Here is how to use a formula to show how a numeric column depends on a factor column
+boxplot(Weight ~ Gender)
+boxplot(Gestation ~ Alcohol)
+boxplot(Weight ~ MothersAge)
+detach(NCBirths2004)
+```
+
+# Why do we need mathematics when we analyze data?
+```{r}
+attach(NCBirths2004)
+#Contingency table for whether Mom smokes vs. gender of baby
+table(Smoker, Gender)
+#Does this mean that smoking favors girl babies?
+#Calculate the proportion of smoking moms and girl babies
+pSmoke <- mean(Smoker == "Yes"); pSmoke
+pGirl <- mean(Gender == "Female"); pGirl
+N <- nrow(NCBirths2004); N
+#Here is what we would expect if gender and smoking were independent
+#i.e. if the proportion of girls was equal for smokers and non-smokers
+Expected <- N*outer(c( 1-pSmoke, pSmoke), c(pGirl, 1-pGirl)); Expected
+Observed <- table(Smoker, Gender)
+#This function to measure discrepancy was invented by Karl Pearson in 1900
+chisq <- sum((Observed-Expected)^2/Expected); chisq
+#It estimates the probability that such a large discrepancy would arise by chance.
+pValue <- 1 - pchisq(chisq,1); pValue   #18% chance
+#In Week 8 we will be able to understand why this test works.
+#For better or worse, this test has been automated in R
+chisq.test(Smoker, Gender, correct = FALSE)
+detach(NCBirths2004)     
+```
+
+# R includes more than 100 built-in datasets
+* The ones in the "datasets" package have pretty good help files.  
+Those in packages that you load may be less well documented.  
+Here is a Shiny app that lets you explore them.
+```{r}
+shinyAppFile("01-viewDatasets.Rmd",
+             options = list(width = "100%", height = 600)
+)
+```
+
+# A dataset can also be loaded from a file
+* Here is one that was created in R Script 1D and placed in the Week 1 subdirectory.
+The working directory was also set to the Week 1 subdirectory.
+```{r}
+getwd()     #This directory has the file in it
+Sox <- read.csv("SoxLogical.csv")
+head(Sox)
+#With nothing but logical columns we have contingency tests galore
+attach(Sox)
+Observed<- table(Won, ScoreMore4); Observed
+#Here is a way to generate expected values straight from the contingency table
+Expected <- outer(rowSums(Observed), colSums(Observed))/sum(Observed)
+chisq <- sum((Observed - Expected)^2/Expected); chisq
+1 - pchisq(chisq,1)   #a very small probability
+chisq.test(Won,ScoreMore4, correct = FALSE)
+head(Sox)   #There are 7*6/2 = 21 possible contingency tests
+#Do the Sox have a home field advantage?
+chisq.test(Won,HomeGame, correct = FALSE)
+#Do low scoring games end sooner?
+chisq.test(Gave3OrFewer,QuickGame, correct = FALSE)
+detach(Sox)
+```
+
+# Exploring how a numeric column depends on a factor column
+* In this case boxplot() is useful.
+Here is a Shiny app that offers a choice of boxplots.  
+We will have to learn how to tell whether numerical differences are significant.
+```{r}
+shinyAppFile("01-delays.Rmd",
+             options = list(width = "100%", height = 600)
+)
+```
+
+
+# Exploring how one numeric column depends on another numeric column
+* In this case a scatter plot is useful.
+* We will have to learn more linear algebra to investigate relationships.
+```{r}
+df <- get("trees"); head(trees)
+attach(df)
+plot(Girth, Height)
+#We will learn how to model one variable as a linear function of another
+#but of course this has been automated in R
+model <- lm(Height ~ Girth)
+abline(model$coefficients[1], model$coefficients[2])
+Product <- Girth*Height    #should be proportional to the volume
+plot(Product, Volume)
+model <- lm(Volume ~ Product)
+abline(model$coefficients[1], model$coefficients[2])
+detach(df)
+```
+
+# A scatter plot reveals an unexpected relationship
+Here is a Shiny app that offers a choice of scatter plots.  
+The dataset has one column for the wait since the last eruption of Old Faithful
+and a second column for the duration of the eruption that occurs.
+```{r}
+shinyAppFile("01-faithful.Rmd",
+             options = list(width = "100%", height = 700)
+)
+```

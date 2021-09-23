@@ -1,0 +1,875 @@
+---
+title: "Math 23c - Week 3"
+author: "Paul Bamberg"
+output:
+  slidy_presentation:
+  font_adjustment: +1
+  incremental: true
+  widescreen: true
+  classoption: aspectratio=169
+runtime: shiny
+---
+<style type="text/css">
+div.slide p {
+  color: DarkBlue;
+  font-size:smaller;
+}
+div.slide h1 {
+  color: DarkRed;
+  font-size: 100%;
+}
+div.slide h2 {
+  color: DarkGreen;
+  font-size: smaller
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
+```
+
+# Countable sets
+* A set $A$ is  finite, with cardinality $n$,
+if there is a bijective correspondence between it and the set
+$\{1,2,\cdots,n\}$.   
+Naming the elements $A_1, A_2, \cdots ,A_n$ implies
+that the set is finite.
+
+* A set is  countably infinite if there is a bijective
+correspondence between it and the set $\mathbb{N} = \{0, 1, 2,
+\cdots\}$.  
+
+* Naming the elements $A_0, A_1, A_2, \cdots$ implies
+that the set is countably infinite.  
+(Including 0 as a subscript is a
+matter of taste, consistent with Hubbard.)
+
+
+
+# The Cartesian product $A^2 = \mathbb{N} \times \mathbb{N}$.
+
+* This set may look "bigger" than  $\mathbb{N}$ because it has $(\mathbb{N},1)$ as a proper subset, but it is still just countably infinite.
+
+* Proof: list the elements "diagonally" in increasing order of the sum of
+the elements in the pair.
+$(A^2)_0 = (0,0)$  
+$(A^2)_1 = (0,1)$  
+$(A^2)_2 = (1,0)$  
+$(A^2)_3 = (0,2)$  
+$(A^2)_4 = (1,1)$  
+$(A^2)_5 = (2,0)$   
+etc.
+
+# The Cartesian product $A^k$ of $k$ copies of $\mathbb{N}$ is countably infinite.
+
+* An element of $A^k$ is an ordered list of $k$ non-negative
+integers, like (2,3,0,9,5) if $k=5$.
+
+* Proof by induction on $k$. 
+
+  + The base case $k = 2$ was just proved.
+  + For the "inductive step": assume that $A^k$ is countably infinite
+(inductive hypothesis), and prove that $A^{k+1}$ is countably
+infinite.  
+  + $A^{k+1} = (\mathbf{N} \times \mathbf{N} \times \cdots \mathbf{N})\times \cdots \mathbf{N} = A^k \times A$
+  + By the inductive hypothesis, $A^k$ is countably infinite. So $A^{k+1}$ is the Cartesian product of two countable infinite sets, and so it is countably infinite.
+
+
+
+# A countably infinite union of disjoint countably infinite sets is countably infinite:
+$$A = \bigcup_{i=0}^\infty B_i$$.
+
+* When a set is countably infinite, its elements can be indexed by the
+non-negative integers $\mathbb{N}$. Name the $j$th element of the $i$th set
+$B_{(i,j)}.$   Now there is a bijective correspondence between the
+elements of $A$ and the countably infinite set $\mathbb{N} \times
+\mathbb{N}$.  
+$A_0 = B_{(0,0)}$  
+$A_1 = B_{(0,1)}$  
+$A_2 = B_{(1,0)}$  
+$A_3 = B_{(0,2)}$  
+$A_4 = B_{(1,1)}$  
+$A_5 = B_{(2,0)}$  
+etc.
+
+* So there is a bijection between $B_{(m,n)}$ and the countably infinite set $(m,n).$
+
+# The positive rational numbers are countably infinite
+
+Proof: List them "diagonally" by numerator and denominator,
+omitting any that are not in lowest terms.
+
+$Q_0 = \frac{1}{1}$
+
+$Q_1 = \frac{1}{2}$
+
+$Q_2 = \frac{2}{1}$
+
+$Q_3 = \frac{1}{3}$
+
+$Q_4 = \frac{3}{1}$
+
+etc.
+
+# All the integers, positive, negative, and zero, are countably infinite
+
+Proof: List them as follows:
+
+$Z_0$ = 0
+
+$Z_1$ = 1
+
+$Z_2$ = -1
+
+$Z_3$ = 2
+
+$Z_4$ = -2
+
+etc.
+
+* All the rational numbers, positive, negative, and zero, are countably infinite
+
+* The set $\mathbb{Q}^n$ of $n$-element lists of rational numbers.  
+A sample element of $\mathbb{Q}^3$ is $(\frac{1}{2},-\frac{8}{3},\frac{22}{7})$.  
+One-line proof: this is a finite Cartesian product of countable sets.
+
+
+
+
+# Countable additivity
+
+* Let $\{A_1, A_2, A_3, \cdots\}$ be a countably infinite set of disjoint subsets ($A_i \cap A_j = \emptyset$ if $i \neq j$) of the sample space $S$.  
+Then $f$ is a **countably additive measure** if $f$ is nonnegative and $$f(\bigcup_{i=1}^{\infty} A_i )= \sum_{i=1}^{\infty} f(A_i)$$ whenever the series on the right is convergent.
+
+* If $f(S) = 1$, then convergence is assured and $f$ is a **countable probability measure**.
+
+# A simple example, for the skeptical
+
+* You go to the fortune teller and ask, "Will I ever get married?" Her answer:
+
+ + In the first year after you graduate, the probability of your marriage is $p_1 = \frac{1}{4}$.
+ 
+ + In the second year after you graduate, the probability of your marriage is $p_2 = \frac{1}{8}$.
+ 
+ + In the $n$th year after you graduate, the probability of your marriage is $p_n = \frac{1}{2^{n+1}}$.
+ 
+ + As long as you remain single, you are immortal.
+
+* If you conclude that your probability of marriage is $$p = \frac{1}{4} + \frac{1}{8} +\frac{1}{16} + \cdots = \frac{1}{2},$$  
+then you have accepted the principle of countable additivity!
+
+
+# Countable additivity and continuity.
+
+* Consider the following sequence of disjoint subsets of (0,1]:  
+$B_1 = (0,\frac{1}{2}], B_2 = (\frac{1}{2},\frac{3}{4}], B_3 = (\frac{3}{4},\frac{7}{8}],\cdots.$  
+The union of these sets is $S = B_1 \cup B_2 \cup B_3 + \cdots,$ and by countable additivity  
+$\mathbf{P}(S) = \mathbf{P}(B_1) \cup \mathbf{P}(B_2) \cup \mathbf{P}(B_3) + \cdots,$  
+So taking probabilities has converted an infinite discrete union into an infinite sum.
+
+* Instead, consider the increasing sequence of upper endpoints, $a_1 = \frac{1}{2}, a_2 = \frac{3}{4}, \cdots$  
+and the increasing sequence of subsets of $S$  
+$A_1 = B_1, A_2 = A_1 \cup B_2, A_3 = A_2 \cup B_3, \cdots.$
+
+* The limit of this increasing sequence is $\lim A_n = \bigcup_{i = 1}^{\infty} A_i = S$
+and by countable additivity, $$\lim \mathbf{P}(A_n) = \lim \sum_{i=1}^n \mathbf{P}(B_1) = \mathbf{P}(S).$$
+
+* So the probability function maps a convergent increasing sequence of subsets of $S$ into a convergent increasing sequence of real numbers whose limit is $\mathbf{P}(S)$ In other words, it is a continuous function.
+
+# Equivalence relations
+
+* "Equivalence relation" generalizes the familiar properties of "equal." An equivalence relation $\sim$ between elements of a set must satisfy the following axioms:
+
+  + Reflexive: $x \sim x$.
+  + Symmetric: $x \sim y$ if and only if $y \sim x$.
+  + Transitive: If $x \sim y$ and $y\sim z$ then $x \sim z$.
+
+
+* For sigma-fields, We will use the "love and marriage" equivalence relation: $x \sim y$ means "you can't have one without the other."  
+More precisely, $x \sim y$ if you cannot find a set in $\mathcal{A}$ that includes $x$ without also including $y$ or   $\forall B \in \mathcal{A}, x \in B$ if and only if $y \in B.$
+
+* The relation $x \sim y$ is
+
+  + Reflexive, because if set $B$ includes $x$, it includes $x$.
+  + Symmetric, because in a set $B$, $x$ and $y$ are either both present or both absent.
+  + Transitive, because if $B$ includes $x$, it includes $y$ and therefore includes $z$, while if $B$ does not include $x$, it does not include $y$ and therefore does not include $z$,
+
+
+# Partitions and Sigma-fields
+
+* We allow $S$ to be finite, countably infinite, or uncountably infinite. A partition of $S$ is a collection of subsets with the following two properties:
+ 
+  + The subsets in the partition are pairwise disjoint: $A_{\alpha}\cap A_{\beta} = \emptyset.$
+  + The (possibly uncountable) union of all the sets in the partition is $S$.
+  
+* Example: $S$ = Democrats $\cup$ Republicans $\cup$ Independents
+
+
+* When we perform an experiment, precisely one of the events in the partition will occur.
+
+* So $\{1\}, \{2\}, \{3\}, \cdots$ is a countably infinite partition of $\mathbf{N}$, and the sigma-field $\mathcal{F}(\mathcal{P})$ generated by this partition is simply $2^{\mathbf{N}}$, the collection of all subsets of the natural numbers.
+
+* The obvious generalization works whenever we have a countable partition of the sample space:  
+If $\mathcal{P}$ is a countable partition of $S,$ then $\mathcal{F}(\mathcal{P})$ is simply the collection of all possible unions of sets within $\mathcal{P}.$
+
+# Constructing a countable partition
+
+* Suppose that there is a countable collection of events $\mathcal{A} = \{A_1, A_2, \cdots\}$ that need to be in our sigma field. Here is an algorithm for constructing a member of the partition from which we can form the sigma-field.  
+
+  + Choose any element $x \in S$.
+  + Form set $B$, the intersection of $S$ with all the $A_i$ that include $x$ as a member. If no $A_i$ includes $x$, $B=S$.   
+Otherwise $B$ includes $x$ and all other elements  $y \in S$ that always accompany $x$.
+  + From $B$, remove all $A_i$ that do not include $x$ as a member. Any $z \in S$ that ever fails to accompany $x$ is now removed from $B_x.$
+
+* If $x$ appears in any $A_i$, then $B_x$ includes $x$. It also includes any element $y \in x$ that satisfies $x \sim y.$  
+If $x$ appears in no $A_i$, then $B_x$ includes all elements $y \in S$ that occur in no $A_i$. We can call it $B_0$.
+
+* The sets of the form $B_x$ (including $B_0$) form a partition of $S$. Each of these sets may have many different names.   
+If $x, y, z,$ and $w$ have the property that an $A_i$ that includes one of them includes all of them (which implies that an $A_i$ that lacks one of them lacks all of them), then $B_x = B_y = B_z = B_w.$  
+Each $x \in S$ belongs to one of the sets $B_x$ or to $B_0$.  Any two sets $B_x$ and $B_y$ are either equal or disjoint.  
+
+* Proof:
+  + If no $z$ belongs to both $B_x$ and $B_y$, then $B_x \cap B_y = \emptyset$, and so  $B_x$ and $B_y$ are disjoint. 
+  + If some $z$ belongs to both $B_x$ and $B_y$, then $x \sim z$ and $z \sim y$ so $x\sim y$ and $B_x$ and $B_y$ are equal.
+  
+# Constructing a partition: an example
+
+* As the sample space S, use the integers 1, 2, ...10.  
+Choose four sets that must be in the sigma-field
+
+```{r}
+N <- 10    #number of elements in the sample space
+S <- 1:N
+M <- 4     #number of sets in our initial list
+sets <- list(c(2,4,5),c(6,9,10),c(1,2,3,4,5),c(2,4,6,9,10))
+for (i in 1:M) {
+   cat("Set", i, "that must be in the sigma field is ",sets[[i]],"\n")
+}
+#Set up a list to hold the equivalence classes
+classes <- vector("list",N)    #create an empty list
+#Now use the algorithm described above
+for (k in 1:N) {
+  class <- S    #initialize class to include everything
+  for (i in 1:M){
+    if (is.element(k, sets[[i]]))
+      class <- intersect(class, sets[[i]])  #if set includes k, intersect with it
+    else class <- setdiff(class,sets[[i]])  #if set does not include k, remove it
+  }
+  classes[[k]] <- class  #save the resulting equivalence class in our list
+  cat("Class for", k, "is ",classes[[k]],"\n")
+}
+
+for (i in 1:M) {
+  cat(sets[[i]],"\n")
+}
+```
+ * Any two classes are equal or disjoint.   
+Each original set is a union of some of these equivalence classes.  
+If k is never mentioned, you get the class of everything that was not mentioned
+
+
+# Expectation and variance for the uniform distribution
+
+* There are $n$ elements in the sample space, and each has probability $\frac{1}{n}$.  
+For a fair die, $n=6.$ For a roulette wheel with no 0, $n=36.$  
+
+  + Expectation: $$E(X) = \sum_{i=1}^n i P_i = \frac{1}{n}\sum_{i=1}^n i = \frac{1}{n} \frac{n(n+1)}{2} = \frac{n+1}{2}.$$ 
+  
+  + $$Var(X) = E(X^2) - E(X)^2 = \frac{1}{n} \frac{n(n+1)(2n+1)}{6} - (\frac{n+1}{2})^2 = \frac{n^2-1}{12}$$
+
+# Sampling from the uniform distribution
+
+* If we draw a large number $M$ of samples from the uniform distribution, the expected number of samples in each bin is $\frac{1}{n}$, but we will not see exactly that number.
+
+```{r}
+n <- 4; M <- 528
+v <- sample(1:n, M, replace = TRUE)
+Observed <- table(v); Observed
+barplot(Observed)
+```
+* We can use the chi-square statistic to measure the discrepancy between observed and expected.  
+Remarkably, there is a chi-square **function** that replicates the distribution of this statistic.  
+We now repeat the sampling 40000 times.
+```{r}
+Expected <- rep(M/n, n)
+chisq <- sum((Observed-Expected)^2/Expected); chisq
+N <- 40000; discrepancy <- numeric(N)
+for (i in 1:N){
+  v <- sample(1:n, M, replace = TRUE)
+  Observed <- table(v)
+  discrepancy[i] <- sum((Observed-Expected)^2/Expected)
+}
+hist(discrepancy, breaks = 0:35, prob = TRUE)
+#Since there are only n-1 = 3 independent numbers in our sample,
+#we use a chi-square distribution with 3 degrees of freedom.
+curve(dchisq(x, df = 3),add = TRUE, col = "red")
+```
+
+# Testing the hypothesis of a uniform distribution
+
+* Chihara and Hesterberg, Example 3.8. has data on the birth months of World Cup soccer players.
+```{r}
+data <- c(rep("Aug-Oct",150),rep("Nov-Jan",138),rep("Feb-Apr",140),rep("May-Jul",100))
+Observed <- table(data); Observed
+Expected <- rep(sum(Observed)/4,4); Expected
+chisq.value <- sum((Observed-Expected)^2/Expected); chisq.value
+hist(discrepancy, breaks = 0:30, prob = TRUE)
+curve(dchisq(x, df = 3),add = TRUE, col = "red")
+abline(v = chisq.value, col = "blue" )
+#There are two ways to get the P-value
+sum(discrepancy > chisq.value)/N    #from our simulation (no theory)
+pchisq(chisq.value, df = 3, lower.tail = FALSE)   #theoretical
+```
+* Either way, we conclude that the probability that such a large lack of uniformity would arise by chance is only about 1%. 
+
+# The Bernoulli distribution:
+
+* The sample space has two elements, "success" 1 with probability $p$ and "failure" 0 with probability $q=1-p$.
+
+* Expectation: $$E(X) = 0 \cdot \mathbf{P}(0) + 1 \cdot \mathbf{P}(1) = 0 \cdot(1-p) + 1 \cdot p = p.$$
+
+* Variance: $$Var(X) = E(X^2) - E(X)^2 = p \cdot 1^2 - p^2 = p(1-p) = pq.$$
+\vspace{70pt}
+
+#  The binomial distribution
+* The experiment consists of $n$ independent Bernoulli trials, and the sigma field is generated by events for the form $A_k$ "$k$ of the $n$ trials are successful." 
+
+* Probability mass function:
+$$\mathbf{P}(A_k) = \binom{n}{k} p^k q^{n-k}.$$
+
+* The easy way to calculate the expectation and variance is to exploit what we know about the sum of $n$ independent random variables, each with the same distrbution: Just multiply the expectation and variance for the Bernoulli distribution by $n$.
+
+  + Expectation $E(X) = np.$ 
+  
+  + Variance: Var$(X) = np(1-p)$
+
+# The tail sum theorem
+
+* Suppose that $X$ is a random variable that can assume only non-negative integer values. Let $A_k$ be the event that the value of $X$ is greater than $k$. By writing $X$ as a sum of indicator functions, we can derive the so-called "tail sum theorem," which states that
+$$\mathbb{E}[X] = \sum_{k=0}^{\infty}\mathbf{P}(A_k).$$
+
+* Since X can assume only non-negative integer values, $$X = \mathbf{1}_{X > 0}+ \mathbf{1}_{X > 1}+ \mathbf{1}_{X > 2} + \cdots$$
+
+* So in this case (non-negative integer values only) we have a way to calculate expectation by using the distribution function instead of the mass function.  
+$$E(X) = \sum_{k = 0}^{\infty} E(\mathbf{1}_{X > k}) = \sum_{k = 0}^{\infty} \mathbf{P}(A_k)$$
+
+
+
+# A distribution for which the distribution function is obvious
+
+* The experiment: you go to job interviews, vowing to continue until you get a "Yes", then stop interviewing. For each interview, the probability of a job offer is $p$; the probability of a "No" is $q = 1-p$. 
+
+* The Office of Career Services decides that if you are unsuccessful on your $m$th interview, they will offer you a job themselves! So the number of interviews is a bounded random variable $X^{[m]}$
+
+The sample space consists of all sequences $A_k$ of the form "$NNN\cdots NY$," containing $k \leq m$ symbols and ending with the first $Y$.   
+The sigma-field is $2^{S}$. 
+For $1 \leq k < m$, the probability function assigns to the event "you are finally offered a job on the $k$th interview" the probability $\mathbf{P}(A_k) = q^{k-1}p.$
+
+* However, $P_{X^{[m]}}(\{m\})$ is just the probability that your first $m-1$ interviews were all unsuccessful, i.e. $\mathbf{P}(A_m) = q^{m-1}.$
+
+* It is easy to check that 
+  $$\sum_{k=1}^m \mathbf{P}(A_k) = \sum_{k=1}^{m-1}\mathbf{P}(A_k) + \mathbf{P}(A_m) = \frac{p(1-q^{m-1})}{1-q} + q^{m-1} = 1.$$
+
+
+# Using the tail sum theorem to calculate the expectation $E(X^{[m]})$
+
+* For $1 \leq k <m, \mathbf{P} (X >k) = q^k$ (requires $k$ unsuccessful interviews)
+
+* For $k \geq m, \mathbf{P} (X >k) = 0$ (you can never have so many interviews).
+
+* According to the tail-sum theorem,
+$$E(X) = \sum_{k = 0}^{m-1} \mathbf{P}(X > k) = \sum_{k = 0}^{m-1} q^k = \frac{1 - q^m}{1-q} = \frac{1 - q^m}{p}$$
+
+
+
+
+
+# Support for the binomial distribution in R
+
+* As with all named distributions, there are four functions, whose names start with "d," "p,", "q," and "r." There are also two parameters, the number of trials $n$ and the probability of success $p$.
+```{r}
+#dbinom is the probability mass function
+n <- 10; p <- 0.4; x <- 4
+#There is a formula in terms of binomial coefficients for the mass function
+dbinom(x, n, p); choose(n,x)*p^x*(1-p)^(n-x)
+#To illustrate a discrete distribution, use a barplot, not a histogram
+barplot(dbinom(0:n, n, p), names.arg = 0:n)
+#We can compute the expectation and variance by summation
+sum(dbinom(0:n,n,p))   #confirm that the total probability is 1
+sum(0:n*dbinom(0:n,n,p)); n*p   #confirm the formula for expectation
+sum((0:n)^2*dbinom(0:n,n,p))- (n*p)^2; n*p*(1-p)   #confirm the formula for variance
+#The distribution function is the sum of the mass function
+pbinom(6, n, p); sum(dbinom(0:6, n, p)) #probability for less than or equal to 6
+barplot(pbinom(0:n,n,p), names.arg = 0:n)   #an increasing function
+curve(pbinom(x, n, p), from = 0, to = n)   #this is an increasing function of a real variable
+#Here is how to find the probability that X is greater than 6
+pbinom(6, n, p, lower.tail = FALSE); 1 - pbinom(6, n, p)
+#we can use the tail theorem to calculate the expectation  
+sum(pbinom(0:n, n, p, lower.tail = FALSE)); n*p
+#The quantile function is the function inverse of the distribution function
+y <- pbinom(4, n, p); y; qbinom(y, n, p)
+curve(qbinom(x, n, p), from = 0, to = 1)   #this is an increasing function of a real variable
+#Here is the function that simulates the flipping of n unfair coins
+rbinom(1, n, p)
+rbinom(1, n, p)   #result may be anything from 0 to 10
+#In this case a histogram is appropriate
+flips <- c(rbinom(10000, n, p),0:n); head(flips)  #make sure that each $n$ appears once
+hist(flips, breaks = 0:n)
+#Alternatively we can make a table and do a barplot
+table(flips)   #there may be no instances of 10
+barplot(table(flips), arg = 0: n)
+# Here is a comparison of the mass function and the samples
+barplot(rbind(table(flips),10000*dbinom(0:n,n,p)), beside = TRUE, col = c("red", "blue"))
+```
+
+
+# The "geometric distribution" - an unbounded positive random variable
+
+* The experiment: you go to job interviews, vowing to continue until you get a "Yes", then stop interviewing. For each interview, the probability of a job offer is $p$; the probability of a "No" is $q = 1-p$. 
+
+* The sample space consists of all sequences $A_k$ of the form "$NNN\cdots NY$," containing $k$ symbols and ending with the first $Y$. The sigma-field is $2^{S}$. The probability function assigns to the event "you are finally offered a job on the $k$th interview" the probability $P(A_k) = q^{k-1}p.$
+
+* The random variable $X$ is the total number of interviews, and  
+$\mathbf{P}(A_k) = q^{k-1}p.$     
+It is easy to check that $$\sum_{k=1}^\infty P_X(\{k\}) = 1.$$
+
+* The obvious way to calculate the expectation is to evaluate the infinite sum $$\sum_{k=1}^\infty k P_X(\{k\}) = 1,$$
+and this leads to the right answer, but there is a more principled approach. 
+
+# Expectation for a geometric random variable
+
+* Random variable $X$ is the limit of a sequence of simple random variables $X^{[m]}$, and we just showed that
+$$E(X^{[m]}) = \frac{1 - q^m}{1-q}.$$  
+In the limit as $m \rightarrow \infty$, we get $$E(X^{[m]}) = \lim\frac{1 - q^m}{1-q} = \frac{1}{p}.$$
+
+* Alternatively, use the tail sum theorem and do an infinite sum.
+$$E(X) <- \sum_{k = 0}^{\infty}\mathbb{P}(X > k) = \sum_{k = 0}^{\infty} q^k = \frac{1}{1-q} = \frac{1}{p}$$
+
+* Note: this formula counts the final success. In R, the final success is not counted.
+
+# Applying the geometric distribution
+
+* A recent college graduate decides that before getting married, he will do one job that makes him happy, one that makes him famous, and one that makes him rich.  
+Each new job that he tries has a probability of $\frac{1}{3}$ of conferring happiness, fame, or wealth (but only one of these). 
+
+* Unbounded random variable $X$ is the total number of jobs that he takes before qualifying for marriage. What is its expectation?
+
+  + First job guarantees a single attribute -- expectation 1.
+  + Probability of getting a second attribute in the next job is $p = 2/3,$ so expectation is $1/p = 3/2$
+  + WIth two attributes in hand, the probability of getting the third is $p = 1/3,$ so expectation is $1/p = 3.$
+  + Expected total number of jobs before marriage is 1 + 3/2 + 3 = 11/2.
+
+# The "negative binomial distribution"
+
+* The same job-hunting experiment, but now you decide to keep interviewing until you receive $r$ "Yes" replies. So a sequence will look like
+ "$NYNNY\cdots NY$," with a $Y$ as the final symbol and $r-1$ other $Y$s scattered along with $k$ $N$s among the first $r+k-1$ symbols. The random variable $Z$ is the total number of interviews required to receive $r$ "Yes" replies.
+
+* The probability of a specific sequence with $r$ $Y$s and $k$ $N$s is  $q^{k}p^r.$   Since there are $\binom{k+r-1}{r-1}$ ways of placing the first $r-1$ "Yes" replies, the probability of receiving your $r$th "Yes" at interview $r+k$ is
+$$P_Z(\{r+k\}) = \frac{(k+r-1)!}{(r-1)!k!}q^{k}p^r.$$
+To check that $P(S) = 1$, you need to sum this over all values of $k$. Officially, you should create a random variable $Z^{[m]}$ where there is an upper limit of $m$ interviews, then take the limit as $m \rightarrow \infty.$
+
+* The easy way to evaluate the expectation is to note that $Z$ is the sum of $r$ geometric random variables. You interview until you receive a "Yes" (expected number of interviews is $\frac{1}{p}$) and repeat the process $r$ times. So
+$$E(Z)=  \frac{r}{p} \text{(this counts the $r$ successes as well as the failures)}$$
+
+* This distribution is called "negative binomial" because the mass function includes the coefficient of $q^k$ in the binomial expansion $$(1-q)^{-r} = \sum_{k= 0}^{\infty} \binom{k+r-1}{r-1}q^k.$$
+
+# Support in R for the geometric distribution
+* There are the usual four functions: `pgeom(), dgeom(), qgeom(), rgeom().'  
+However, R uses the "before" version instead of the "until" version. Only the failures are counted, not the final success (geometric) or the $r$ successes (negative binomial). As a result, the expectation for a geometric distribution is $\frac{1}{p}-1.$ 
+
+* Here is an example with $p = \frac{1}{3}.$ 
+```{r, echo = TRUE}
+p <- 1/3; N <- 20  #set a reasonable upper limit
+dgeom(0,p)    #the probability of no failures is p
+dgeom(0:N,p)
+barplot(dgeom(0:N,p), names.arg = 0:N)
+# R cannot do infinite sums, but N will suffice
+sum(dgeom(0:N,p))    #close to 1
+sum(0:N *dgeom(0:N,p))    #expectation is close to 2
+#The probability distibution is an increasing function
+barplot(pgeom(0:N,p), names.arg = 0:N)
+#We can use the tail-sum theorem to calculate the expectation.
+N <- 100   #this is harmless if we are not displaying
+sum(pgeom(0:N, p, lower.tail = FALSE))     #rounds off to the exact answer
+#Because of the long tail to the right, the median is less than the mean
+p <- 1/11; N <- 40   #this will lead to an expectation of 11-1 = 10
+barplot(dgeom(0:N,p), names.arg = 0:N)
+med <- qgeom(0.5, p); med    #use the quantile function to find the median
+abline(v = med, col = "red")   #a nice way to display the median
+firstq <- qgeom(0.25, p); firstq
+abline(v = firstq, col = "blue")   #the first quartile
+lastq <- qgeom(0.75, p); lastq
+abline(v = lastq, col = "green")   #the quartiles are not symmetrically spaced
+# A boxplot captures all of this in a single graphic
+boxplot(dgeom(0:N,p))
+#We can generate random data in accordance with a geometric distribution
+#This simulates the result of rolling a die and counting the number of rolls before a 5 o6 6 occurs
+p <- 1/3; n <- 1000; N = 15  #do 1000 rolls
+rolls <- rgeom(n, p); head(rolls)
+mean(rolls)    #should be close to the expectation, 2
+hist(rolls, breaks = N) # probably put 0 and 1 in the leftmost bin
+#For integer data a barplot is a better choice
+rolls <- c(rolls, 0:N)  #make sure each value occurs at least once
+barplot(table(rolls)[0:N+1], names.arg = 0:N)
+#Again we can compare frequency of occurrence with probabilities 
+barplot(rbind(table(rolls)[0:N+1],n*dgeom(0:N,p)), names.arg = 0:N, beside = TRUE, col = c("red", "blue"))
+```
+
+# Testing the hypothesis of a geometric distribution
+
+* Box and Jenkins developed a methodology for forecasting sales data, and R provides access to one of their datasets.  
+If sales fluctuate randomly from one quarter to the next, then a slump in sales should have the same probability each quarter, and the number of quarters without a slump should have a geometric distribution.
+
+```{r, warning = FALSE}
+BJSD <- get("BJsales"); N <- length(BJSD); N
+previous <- head(BJSD, N-1)  #drop the last value
+current <- tail(BJSD, N-1)   #drop the first value
+ratio <- current/previous; head(ratio)
+hist(ratio)
+#For simplicity, make sure that we end with a slump
+slump <- head((ratio < .997), 147); head(slump); tail(slump)
+p <- mean(slump); p   
+#Now we can start anywhere and count quarters before the next slump
+head(slump, 10)
+start3 <- tail(slump,-2); head(start3,8); #skips the first 2
+min(which(start3 == TRUE))
+streak <- numeric(N-3)
+streak[1] <- (min(which(slump)))
+for (k in 2:N-3) {
+  streak[k] <- min(which(tail(slump,1-k)))
+}
+tbl <- table(streak)
+barplot(tbl)
+model <- (N-3)*dgeom(0:20, p);model
+#If we want to use chi-square,we should avoid expected < 5
+#So we put our data into 9 bins
+Obs <- Exp <- numeric(9)
+for (i in 1:5){
+  Obs[i] <- tbl[i]
+  Exp[i] <- model[i]
+}
+for (i in 0:2){
+  Obs[6+i] <- tbl[6+2*i]+tbl[7+2*i]
+  Exp[6+i] <- model[6+2*i]+model[7+2*i]
+}
+Obs[9] <- sum(tbl[12:30])
+Exp[9] <- (N-3)*pgeom(11,p, lower.tail = FALSE)
+sum(Obs); sum(Exp)
+Obs; round(Exp)
+#It's clear that the observed data have a much longer tail,
+#but we'll try chi-square anyway.
+#It costs one degree of freedom to make the totals equal,
+#and another to fit one parameter to the data.
+chisq.value <- sum((Obs-Exp)^2/Exp); chisq.value
+pchisq(chisq.value, df = 7, lower.tail = FALSE)
+```
+
+# Support in R for negative binomial
+
+* The Honor Council has adopted a "three strikes and you're out" policy for plagiarism. Suppose that you plagiarize every assignment, and your probability of being caught on any individual assignment is $p = 1/4.$   What is the distribution of the number of undetected examples of plagiarism before you are sent home for a year?
+```{R, echo = TRUE}
+p <- 1/4; r = 3; N = 30
+barplot(dnbinom(0:N, r, p), names.arg = 0:N)        
+sum(0:N* dnbinom(0:N, r, p)); 3*(1/p - 1)    #check the expectation
+barplot(pnbinom(0:N, r, p), names.arg = 0:N)  #the distribution function      
+sum(pnbinom(0:N, r, p, lower.tail = FALSE)); 3*(1/p - 1)    #expectation via tail-sum
+#We can do a simulation for 10000 students and compare
+n <- 10000
+escapes <- rnbinom(n, r, p); head(escapes)
+mean(escapes); r*(1/p - 1)    #confirm that the mean is close
+barplot(rbind(table(escapes)[0:N+1],n*dnbinom(0:N,r,p)), names.arg = 0:N, beside = TRUE, col = c("red", "blue"))
+#Negative binomial is an example of a "sampling distribution": the sum of three geometric
+escapes = rgeom(n,p)+ rgeom(n, p)+ rgeom(n, p)  #sum successes before each failure
+mean(escapes); r*(1/p - 1)    #confirm that the mean is close
+#Again compare simulation with mass function
+barplot(rbind(table(escapes)[0:N+1],n*dnbinom(0:N,r,p)), names.arg = 0:N, beside = TRUE, col = c("red", "blue"))
+```
+
+# Poisson distribution as the limit of a binomial distribution
+
+* Random variable $X_n$ has a binomial distribution with parameters $n$ and $p$ and expectation $\lambda = np$. So $p = \lambda / n.$
+
+* Its mass function is $$P(X_n = x) = \binom{n}{x}p^x(1-p)^{n-x}=  \frac{n!}{x!(n-x)!} \frac{\lambda^x}{n^x} (1-\frac{\lambda}{n})^{n-x}.$$
+
+* Rewrite this so that it becomes easy to take the limit as $n \rightarrow \infty$.
+$$P(X_n = x) = \frac{n(n-1)(n-2)\cdots(n-x+1)}{n \cdot n \cdot n \cdots n}\frac{\lambda^x}{x!}(1-\frac{\lambda}{n})^{-x} (1-\frac{\lambda}{n})^{n}.$$
+
+We have fixed $\lambda$ and $x$ and can now let $n \rightarrow \infty$.
+
+$$\lim \frac{n(n-1)(n-2)\cdots(n-x+1)}{n \cdot n \cdot n \cdots n} = 1, \lim (1-\frac{\lambda}{n})^{-x} = 1,  \lim (1-\frac{\lambda}{n})^{n} = e^{-\lambda}.$$
+
+* When we take the limit as $n \rightarrow \infty$ we get the mass function for a Poisson random variable $X$:
+
+$$P(X = x) = e^{-\lambda}\frac{\lambda^x}{x!}.$$
+
+
+# Example of the Poisson distribution as an approximation
+
+* A Nigerian lawyer plans to send you 48 emails during the next 24 hours, each telling you how he can help you claim a lost fortune. The emails are sent by a spambot with the property that the probability that a specific email arrives during any time interval of length $T$ hours is $\frac{T}{24}$.  
+Find the exact probability that precisely 2 of the emails will arrive between 9 and 10 AM, and compare with the approximation given by the Poisson distribution.
+
+* We do the calculation in R
+```{r, echo = TRUE}
+x <- 2; N = 48; lambda = x/N
+#The exact answer (binomal)
+dbinom(x, N, lambda)
+#The Poisson approximation
+dpois(x, 2)
+#Comparison for 0 up through 10 emails
+barplot(rbind(dbinom(0:10, N, lambda),dpois(0:10, 2)), beside = TRUE , col = c("red", "blue"))
+```
+
+# Properties of the Poisson distribution
+
+* The Poisson distribution with parameter $\lambda$ has mass function  
+$$\mathbf{P}(X = x) = e^{-\lambda}\frac{\lambda^x}{x!}.$$
+
+
+* Since the Taylor series for $e^{\lambda}$ is $$1 + \lambda + \frac{\lambda^2}{2!} + \frac{\lambda^3}{3!} + \cdots.$$
+the sum of the probability mass function is $e^{-\lambda}e^{\lambda} = 1.$
+
+* We can calculate the expectation by the usual formula  
+$$E(X)= \sum_{x=1}^{\infty}x \mathbf{P}(X = x) = \sum_{x =1}^{\infty}x e^{-\lambda}\frac{\lambda^x}{x!} = \sum_{x =1}^{\infty} e^{-\lambda}\frac{\lambda^x}{(x-1)!}$$
+
+* Set $j = x-1$ to convert this to 
+$$E(X)=\lambda \sum_{j =0}^{\infty} e^{-\lambda}\frac{\lambda^j}{j!}= \lambda e^{-\lambda}e^{\lambda} = \lambda.$$
+
+# Sum of two independent Poisson random variables
+* If $X_1$ and $X_2$ are independent Poisson random variables with parameters $\lambda_1$ and $\lambda_2$ respectively, then $X_1 + X_2$ is Poisson with parameter $\lambda_1 + \lambda_2$.
+
+* In general, if $X_1$ and $X_2$ are random variables with non-negative integer values,
+$$\mathbb{P}(X_1+X_2 = n) = \sum_{j=0}^n \mathbb{P}(X_1 = j , X_2 = n-j)=\sum_{j=0}^ne^{-\lambda_1}\frac{\lambda_1^j}{j!} e^{-\lambda_2}\frac{\lambda_2^{n-j}}{(n-j)!} $$
+
+* Now multiply and divide by $n!$ to get a binomial coefficient:
+$$\mathbb{P}(X_1+X_2 = n) = e^{-(\lambda_1+ \lambda_2)}\frac{1}{n!}\sum_{j=0}^n \frac{n!}{j!(n-j)!}\lambda_1^j\lambda_2^{n-j}$$
+
+* Identify a binomial expansion:
+$$\mathbb{P}(X_1+X_2 = n) = e^{-(\lambda_1+ \lambda_2)} \frac{(\lambda_1+\lambda_2)^n}{n!}$$
+ 
+* This is the mass function for a Poisson distribution with parameter $\lambda_1+ \lambda_2.$
+
+
+
+# Expectation of a function of a simple random variable
+
+* If $X$ is a simple random variable then $Y = h(X)$ is also a simple random variable.  
+Another version of the Law of the Unconscious Statistician states that  
+$$E(Y) = \sum_i \mathbf{P}(X = x_i) h(x_i).$$
+ 
+* The definition of expectation says that we should sum over the codomain: $E(Y) = \sum_j \mathbf{P}(Y = y_j) y_j.$
+
+* To calculate $\mathbf{P}(Y = y_j)$ we must sum over all values of $X$ that lead to the function value $y_j$: $E(Y) = \sum_j \sum_{x_i: h(x_i) = y_j}\mathbf{P}(X = x_i) y_j.$
+
+*  We are just summing the same set of numbers (function value times probability) in a different order.  As long as all the values $y_j$ are positive, this is a legal operation even for an infinite series.
+
+* For the case where $Y$ is a simple random variable, there is an easy proof. If, instead of using the domain of $X$ as our sample space we regard the set of values for $X$ as a finite sample space, then $Y$ is a random variable on this sample space, and our previous proof of the Law of the Unconscious Statistician applies applies!
+
+# Functions of independent random variables
+
+* Given two random variables $X$ and $Y$, we can calculate the expectation of the product of any pair of bounded functions as follows:
+$$E(f(X)g(Y)) = \sum_{i,j}\mathbb{P}(X = x_i,Y = y_j) f(x_i)g(y_j).$$
+
+* When $X$ and $Y$ are independent, we can use the definition of independence to rewrite this as
+$$E(f(X)g(Y)) = \sum_{i,j}\mathbb{P}(X = x_i)\mathbb{P}(Y = y_j) f(x_i)g(y_j).$$
+$$E(f(X)g(Y)) = \sum_{i}\mathbb{P}(X = x_i)f(x_i) \sum_j\mathbb{P}(Y = y_i) g(y_j).$$
+$$E(f(X)g(Y)) = E(f(X))E(g(Y)).$$
+
+* So if $X$ and $Y$ are independent, not only are they uncorrelated; any bounded functions of $X$ and $Y$ are also uncorrelated.
+
+# A useful test for independence
+
+* You have seen examples that show that random variables can be uncorrelated without being independent. However if $X$ and $Y$ have the property that any pair of bounded functions $f(X)$ and $g(Y)$ are uncorrelated, then we can prove that $X$ and $Y$ are independent.
+
+* For any pair of values $(x_i, y_j)$, choose an indicator function $f(X) = \mathbf{1}_{X = x_i}$ that equals 1 only if $X=x_i$ (otherwise $f$ is zero) and an indicator function $g(Y) = \mathbf{1}_{Y = y_j}$ that equals 1 only if $Y=y_j$.
+
+* Then $$E(f(X)) = E(\mathbf{1}_{X = x_i}) = \mathbb{P}(X = x_i), E(g(Y)) = E(\mathbf{1}_{Y = y_j}) = \mathbb{P}(Y = y_j)$$
+
+* Also, $$E(f(X)g(Y)) = E(\mathbf{1}_{X = x_i}\mathbf{1}_{Y = y_j}) = \mathbb{P}(X = x_i, Y = y_j)$$
+
+* So $\mathbb{P}(X = x_i, Y = y_j) = \mathbb{P}(X = x_i)\mathbb{P}(Y = y_j)$.  
+Since this argument works for each pair of values $(x_i, y_j)$ (using different functions for each pair), we conclude that $X$ and $Y$ are independent.
+
+
+
+# Calculating variance by the "derivative trick"
+
+* Start with the formula for the sum of a geometric series with ratio $q < 1$.
+$$F(q)  = \sum_{k=0}^{\infty} q^k = \frac{1}{1-q}$$
+
+* Differentiate to get a formula for $\sum_{k=1}^{\infty} k q^{k-1}$
+$$F'(q)  = \sum_{k=1}^{\infty} kq^{k-1} = \frac{d}{dq}\sum_{k=0}^{\infty} q^k = \frac{1}{(1-q)^2}$$
+
+* Using this formula we can find the expectation of a geometric random variable wothout using the tail-sum theorem.
+$$E(X) = \sum_{k=1}^{\infty} k \mathbf{P}(X = k) = \sum_{k=1}^{\infty}kpq^{k-1} = \frac{p}{(1-q)^2} = \frac{1}{p}$$
+
+* As a first step in calculating variance , differentiate $F$ again:
+$$F''(q)  = \sum_{k=2}^{\infty} k(k-1)q^{k-2} = \frac{d}{dq}\frac{1}{(1-q)^2} = \frac{2}{(1-q)^3}$$
+
+* Now we have calculated $E(X^2-X))$
+ $$E(X(X-1)) = \sum_{k=2}^{\infty} k(k-1) \mathbf{P}(X = k) = \sum_{k=2}^{\infty} k(k-1) pq^{k-1} = \frac{2pq}{{(1-q)^3}}= \frac{2q}{p^3}$$
+ 
+# Finishing the variance calculation for geometric
+
+* At this point, calculating the variance just requires a bit of algebra:
+$$Var(X) = E(X^2) - E(X)^2 = E(X^2 - X) + E(X) - E(X)^2 = \frac{2q}{p^2} + \frac{1}{p} - \frac{1}{p^2} = \frac{2 - 2p + p - 1}{p^2} = \frac{q}{p^2}$$
+
+* Although the version of the geometric distribution built into R is the "before" version, 1 less than the "until" version that we have been using, subtracting a constant does not change the variance.
+```{r, echo = TRUE}
+p <- 1/5; N = 100    #large upper limit for summation works like infinity
+mu <- sum((0:N)*dgeom(0:N,p)); mu   #expectation is 1/p - 1
+Exsq <- sum((0:N)^2*dgeom(0:N,p))   #expectation of X^2
+Exsq - mu^2; (1-p)/p^2              #agrees with our formula
+```
+
+# Calculating Poisson variance by the "factorial trick"
+
+* The Poisson distribution with parameter $\lambda$ has mass function $\mathbf{P}(X = k)=e^{-\lambda}\frac{\lambda^k}{k!}.$
+$$\text{ Then }E(X)=\sum_{k=1}^{\infty} k \mathbf{P}(X = k) = \sum_{k=1}^{\infty} ke^{-\lambda}\frac{\lambda^k}{k!} = \sum_{k=1}^{\infty} e^{-\lambda}\frac{\lambda^k}{(k-1)!} = \sum_{j=0}^{\infty} e^{-\lambda}\frac{\lambda^(j+1)}{j!} = \lambda. $$
+
+
+* Although we want to know $E(X^2)$, what is easy to evaluate is again $E(X(X-1))$
+$$E(X(X-1))= \sum_{k=2}^{\infty} k(k-1) \mathbf{P}(X = k) = \sum_{k=2}^{\infty} k(k-1)e^{-\lambda}\frac{\lambda^k}{k!} = \sum_{k=2}^{\infty} e^{-\lambda}\frac{\lambda^k}{(k-2)!} = \sum_{j=0}^{\infty} e^{-\lambda}\frac{\lambda^{j+2}}{j!} = \lambda^2. $$
+
+
+* Now calculating the variance of a Poisson random variable is a matter of simple algebra:
+$$Var(X) = E(X^2) - E(x)^2 = E(X^2-X) + E(X) - E(X)^2 = \lambda^2 + \lambda - \lambda^2 = \lambda.$$
+
+* Again it is easy to confirm the calculation in R
+
+```{r, echo = TRUE}
+lambda <- 4; N = 100    #large upper limit for summation works like infinity
+mu <- sum((0:N)*dpois(0:N,lambda)); mu   #lambda
+Exsq <- sum((0:N)^2*dpois(0:N,lambda))   #expectation of X^2
+Exsq - mu^2; lambda              #agrees with our formula
+```
+
+
+# Calculating expectation without doing infinite sums
+
+* If you know that random variable $X$ has a finite expectation, you can often use a recursive approach to calculate it without summing a series.
+
+* You have bet \$3 to play Craps, and your opening roll is a 4. You now continue to roll the pair of dice. If the total is 4, you win \$6. If the total is 7, you lose. If the total is anything else, you keep rolling. What are your expected winnings; i.e. how much would a reasonable person pay you to take over your position?
+
+* Let $x$ denote your expectation. For the next roll there are three outcomes, worth 6, 0, and $x$ respectively. We can write and solve an equation for $x$.
+  + $\mathbf{P}(4) = \frac{3}{36} = \frac{1}{12}$  
+  + $\mathbf{P}(7) = \frac{6}{36} = \frac{1}{6}$   
+  + $\mathbf{P}(other) = 1 - \frac{1}{12} - \frac{1}{6} = \frac{3}{4}$  
+
+* Since your expectation $X$ remains unchanged if you roll neither a 4 nor a 7,  
+$x = 6 \cdot \frac{1}{12} + 0 \cdot \frac{1}{6} + + x \cdot \frac{3}{4}$
+So $\frac{1}{4}x = \frac{1}{2}$ and $x = 2$
+
+* This calculation also applies for an opening roll of 10. Do a similar calculation for 5 or 9 and one for 6 or 8, and you can confirm that when you bet a dollar at Craps, your expected return is about 99 cents.
+
+# Calculating probability without doing infinite sums
+
+* In the new production of "Hamilton" in Puerto Rico, the famous duel is restaged using paintballs.  
+Hamilton fires first, without taking careful aim; he has probability 1/4 of hitting Burr. Burr fires back; he is a better shot and has probability 1/2 of hitting. The duel continues until one of the combatants scores a hit.
+
+* Let $x$ denote the probability that Hamilton wins. Either he hits with his first shot, or he misses and Burr hits, ending the duel, or both combatants miss, in which case Hamilton again has probability $x$ of winning.
+
+* We can write and solve an equation for $x$. If both Hamilton and Burr miss with their opening shots, an event whose probability is $\frac{3}{4} \cdot \frac{1}{2} = \frac{3}{8}$, then the probability $p$ that Hamiton wins the duel is unchanged. So $$p = \frac{1}{4} + \frac{3}{8} p, \frac{5}{8} p = \frac{1}{4}, p = \frac{2}{5}.  $$
+
+* Similarly, let $q$ denote the probability that Burr wins. This happens if Burr survives Hamilton's opening shot then hits, an event with probability $\frac{3}{8}$. If both combatants miss on the first round (also an event with probability $\frac{3}{8}$), Burr still has probability $q$ of winning. So $$q = \frac{3}{8} + \frac{3}{8} q, \frac{5}{8} q = \frac{3}{8}, p = \frac{3}{5}.  $$
+
+* In principle, the duel can go on forever if both combatants keep missing. This event has probability $1-p-q = 0$, but it is not impossible. 
+
+
+
+
+
+# Expectation is not necessarily finite!
+
+* You go to your first job interview. To your surprise, the interviewer asks no questions. He reaches into an urn containing one white ball and one black ball, pulls out the black ball, and announces that you are unqualified. He then places a second black ball in the urn. 
+
+* You go to the second job interview. The interviewer reaches into the urn, which now contains one white ball and two black balls, pulls out a black ball, announces that you are unqualified, and places a third black ball in the urn. 
+
+* Random variable $X$ is the number of interviews that it takes for you to get a job offer. You get a job on interview $k$ if $k-1$ black balls are followed by a white ball, an event whose probability is
+$$\mathbf{P}(X = k) = \frac{1}{2} \cdot \frac{2}{3} \cdot \frac{3}{4} \cdots \frac{k-1}{k} \cdots \frac{1}{k+1} = \frac{1}{k(k+1)}$$
+
+* The probabilities do indeed sum to 1:
+$$\sum_{k=1}^\infty \mathbf{P}(X = k) = \sum_{k=1}^\infty \frac{1}{k(k+1)} = \sum_{k=1}^\infty (\frac{1}{k} - \frac{1}{k+1)} = (1- \frac{1}{2})+ (\frac{1}{2}- \frac{1}{3}) + (\frac{1}{3}- \frac{1}{4}) + \cdots = 1$$
+
+* An attempt to calculate the expectation leads to a divergent series:
+$$E(X) = \sum_{k=1}^\infty k\mathbf{P}(X = k) = \sum_{k=1}^\infty \frac{k}{k(k+1)} = \sum_{k=1}^\infty \frac{1}{(k+1)} = \infty.$$
+
+# A simulation of a process with infinite expectation
+
+* R has no built-in function for this distribution, but we can write one to simulate the interview process. 
+Its value is the number of black balls in the urn when you get the job offer. 
+```{r, echo = TRUE}
+sample(5,1)   #generates 1:5 all with equal probability
+rBW <- function() {
+  black <- 1;
+  while (TRUE) {    #will repeat until we draw the white ball, which is the first one
+    if (sample(black+1, 1)==1) return (black)
+    else (black <- black +1)
+  }
+}
+rBW()  #value is a random number, the number of interviews it took to get a job
+rBW()  #can be different every time
+rBW()  #even though half the time, the value is 1
+
+#Unlike the built-in functions like 'rpois()', our function is not "vectorized."
+#We can put it in a loop to draw 100 samples
+N <- 100; smp <- numeric(N)    #vector to hold the samples
+for (i in 1:N) {
+  smp[i] <- rBW()
+}
+hist(smp, breaks = "FD")   #usually has a very long tail to the right
+mean(smp)  #Although the expectation is infinite, the sample mean must be finite!
+
+#Ordinarily, if we average 100 samples, the sample means cluster together
+#in a band whose width is roughly the square root of the variance.
+M <- 200; means100 <- numeric(M)
+for (j in 1:M) {
+  smp <- numeric(N)    #vector to hold the samples
+  for (i in 1:N){
+    smp[i] <- rBW()
+  }
+  means100[j] <- mean(smp)
+}
+hist(means100, breaks = "FD")   #occasional very large values
+means100  #the mean of 100 samples can still be very large
+```
+
+
+
+
+
+# Beware of random variables with infinitely many positive and negative values
+
+* When you compute the expectation of a random variable $X$ by summing an infinite series, the series must be \textbf{absolutely} convergent.  
+If the values of $X$ are all positive, there is no problem.  
+
+
+
+* If $X$ has infinitely many positive and negative values, you need to write $X = X_+ + X_-,$ where $X_+$ is defined to be zero for outcomes that would lead to a negative value and $X_-$ is defined to be zero for outcomes that would lead to a positive value. Then, if both $E( X_+)$ and  $E( X_-)$ are finite,  $E(X) =E( X_+) + E(X_-)$.
+
+* Application:  The sample space is $S = (1,2, \cdots)$  and the probability mass function is
+$\mathbf{P}(i)= \frac{6}{{\pi^2}i^2}.$
+The random variable (unbounded and not positive) is $X = i\cdot(-1)^{i+1}$ 
+ 
+* If you try to use the standard formula for expectation, you get
+$$\sum_{i=1}^{\infty}X \mathbf{P}(X=i)= \frac{6}{\pi^2} (1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \cdots) = \frac{6 \cdot \log {2}}{\pi^2}$$ 
+
+* However, this is a conditionally convergent series -- $E(X)$ is undefined and $Var(X)$ is infinite.
+The large values of $X$, though unlikely, dominate what happens.
+```{r, echo = TRUE}
+PEuler <- function(i) 6/(pi^2*i^2)
+N <- 1000     #a stand-in for infinity
+sum(PEuler(1:1000))    #sum of the probabilities is close to 1
+payoff <- function(i) i*(-1)^(i+1)    #positive for odd i, negative for even i
+#This is what you should not do when a random variable has positive and negative values
+sum(PEuler(1:1000)*payoff(1:1000)); 6*log(2)/pi^2   #expectation agrees with theory
+sum(PEuler(1:1000)*payoff(1:1000)*1:1000%%2)  #sum of positive payoffs
+sum(PEuler(1:10000)*payoff(1:10000)*1:10000%%2)  #sum of positive payoffs
+sum(PEuler(1:100000)*payoff(1:100000)*1:100000%%2)  #sum of positive payoffs is unbounded
+sum(PEuler(101:10000)) #winning or losing more than 100 is an unlikely event
+#What if you cannot lose more than 100?
+sum(PEuler(1:1000)*pmax(payoff(1:1000), -100)); 6*log(2)/pi^2   #doubles your expectation
+#What if you cannot win more than 100?
+sum(PEuler(1:1000)*pmin(payoff(1:1000), 100)); 6*log(2)/pi^2   #becomes a losing game
+
+ 
+

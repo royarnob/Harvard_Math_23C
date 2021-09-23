@@ -1,0 +1,48 @@
+#Constructing a finite-field formula from a truth table
+#Press Ctrl-Enter to run this app
+library(shiny)
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      p("Remember to use * for multiplication"),
+      textInput("form1", "Challenge: Enter the formula that produces column f1:", "p+q"),
+      actionButton("btnTest","Test your Formula"),
+      actionButton("btnRand","Generate Random Column f1"),
+      h4("For 1 use row 8"),
+      h4("For p use rows 4 and 8"),
+      h4("For q use rows 6 and 8"),
+      h4("For r use rows 7 and 8"),
+      h4("For p*q use rows 2, 4, 6 and 8"),
+      h4("For p*r use rows 3, 4, 7 and 8"),
+      h4("For q*r use rows 5, 6, 7 and 8"),
+      h4("For p*q*r use all eight rows"),
+    ),
+    mainPanel(
+      tableOutput("table")
+    )
+            ))
+  challenge <- numeric(8)
+server <- function(input, output, session) {
+  eg <- expand.grid(c(1,0), c(1,0),c(1,0))
+#Reverse the columns and add some better column names
+  df <- data.frame(eg[,c(3:1)])
+  colnames(df) <- c('p', 'q', 'r')
+  #challenge <- sample(c(0,1),size = 8, replace = TRUE)
+  #df$f1 <- challenge
+  output$table<-renderTable(df, digits = 0)
+  observeEvent(input$btnRand,{
+    df$f1 <- challenge <<- sample(c(0,1),size = 8, replace = TRUE)
+    output$table<-renderTable(df, digits = 0)
+  })
+  observeEvent(input$btnTest,{
+  attach(df)
+  v2<- tryCatch(eval(parse(text=input$form1)),error=function(cond)return(99))
+  detach(df)
+  if (v2 == 99) return()
+  df$f1 <- challenge
+  df$f2 <- v2%%2
+  output$table<-renderTable(df ,digits = 0  )
+  })
+}
+shinyApp(ui = ui, server = server, options = list(launch.browser=TRUE ))
+

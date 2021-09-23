@@ -1,0 +1,210 @@
+---
+title: "Logic, using Boolean Algebra and Finite Fields"
+author: "Arnob Roy"
+date: "Mathematics for Computation and Data Science"
+output: pdf_document
+---
+
+#
+
+# R Homework Problems
+## Problem 1. Truth Tables in R
+### 1.a. $(p\lor q)\implies (r\land s)$
+
+```{r}
+p <- c(rep(TRUE,8), rep(FALSE,8));p
+q <- rep(c(T,T,T,T,F,F,F,F),2);q
+r <- rep(c(T,T,F,F),4);r
+s <- rep(c(T,F),8);s
+```
+
+Consider the logical expression $(p\land q)\to (r\lor s)$, as polynomial expression in finite field $\mathbb{Z}_2, 1+(pq)+(pq)(r+s+rs).$ This expression simplifies:
+
+\[1+(pq)+(pq)(r+s+rs) = 1+pq+pqr+pqs+pqrs\]
+
+```{r}
+"%+%" <- function(x,y) (x+y)%%2
+IMPLIES <- 1 %+% (p*q) %+% (p*q*r) %+% (p*q*s) %+% (p*q*r*s)
+IMPLIES2 <- 1 %+% (p*q) %+% ((p*q)*(r %+% s %+% (r*s)))
+data.frame(p,q,r,s,IMPLIES, IMPLIES2)
+```
+
+### 1.b. Write the expression in conjunctive normal form using the truth table
+
+(ANDs of OR-terms, with each variable included in every OR-term)
+
+Using line 4, we have $(\neg p \lor \neg q \lor r \lor s).$
+
+### 1.c. Generate the truth table
+
+```{r}
+data.frame(p,q,r,s, (!p|!q|r|s))
+```
+
+
+\newpage
+
+## Problem 2. Data Wrangling, Descriptive Statistics, and Chi-Square Tests
+
+### 2.a. Female Democrat Gun Owners
+
+```{r}
+data2a <- read.csv("GSSLogical.csv")
+Problem2a <- subset(data2a, Male==FALSE&Republican==FALSE&GunOwner==TRUE, c(Male,Republican,GunOwner)); summary(Problem2a)
+```
+
+I observed that there were 37 female non-Republican gun owners.
+
+### 2.b. Games with over 10 home-runs!
+```{r}
+data2b <- read.csv("RedSox2013.csv")
+
+Problem2b <- data.frame(data2b$Game, data2b$R, data2b$RA, totalscore=(data2b$R+data2b$RA), duration=data2b$Duration)
+
+Problem2bsubset <- subset(Problem2b,totalscore>=10 )
+
+summary(Problem2bsubset)
+```
+I observed that the shortest duration in which the two teams scored over 10 home-runs together was 153 (I'd guess the units are in minutes).
+
+### 2.c. Visualizing the number of home-runs using Boxplots
+```{r}
+data2c <- read.csv("RedSox2013.csv")
+
+Problem2cDay <- subset(data2c, DayNight == "D" )
+Problem2cNight <- subset(data2c, DayNight == "N" )
+
+boxplot(Problem2cDay$R, xlab = "Day Time Game", ylab = "Number of Home-runs", col = "Light blue")
+boxplot(Problem2cNight$R, xlab = "Night Time Game", ylab = "Number of Home-runs", col = "Dark Blue")
+```
+
+### 2.d. Creating Tables using Outer() & the Chi-Square Test
+
+```{r}
+data2d <- read.csv("RedSox2013.csv"); data2d
+
+tbl1 <- table(data2d$WonLost, data2d$Away); tbl1
+Expected <- outer(rowSums(tbl1), colSums(tbl1))/sum(tbl1); Expected
+chisq.test(data2d$WonLost, data2d$Away)
+```
+
+```{r}
+tbl2 <- table(data2d$WonLost, data2d$DayNight); tbl2
+Expected <- outer(rowSums(tbl2), colSums(tbl2))/sum(tbl2); Expected
+chisq.test(data2d$WonLost, data2d$DayNight)
+```
+
+\newpage
+
+## Problem 3. Examining Air Quality, Boxplots, and Chi-Square Tests
+
+
+```{r}
+data("airquality")
+summary(airquality)
+
+May <- subset(airquality, Month==5, na.rm=TRUE)
+boxplot(May$Ozone, xlab = "May", ylab = "Ozone")
+boxplot(May$Solar.R, xlab = "May", ylab = "Solar Radiation")
+boxplot(May$Wind, xlab = "May", ylab = "Wind")
+boxplot(May$Temp, xlab = "May", ylab = "Temperature")
+
+Jun <- subset(airquality, Month==6, na.rm=TRUE)
+boxplot(Jun$Ozone, xlab = "June", ylab = "Ozone")
+boxplot(Jun$Solar.R, xlab = "June", ylab = "Solar Radiation")
+boxplot(Jun$Wind, xlab = "June", ylab = "Wind")
+boxplot(Jun$Temp, xlab = "June", ylab = "Temperature")
+
+Jul <- subset(airquality, Month==7, na.rm=TRUE)
+boxplot(Jul$Ozone, xlab = "July", ylab = "Ozone")
+boxplot(Jul$Solar.R, xlab = "July", ylab = "Solar Radiation")
+boxplot(Jul$Wind, xlab = "July", ylab = "Wind")
+boxplot(Jul$Temp, xlab = "July", ylab = "Temperature")
+
+Aug <- subset(airquality, Month==8, na.rm=TRUE)
+boxplot(Aug$Ozone, xlab = "August", ylab = "Ozone")
+boxplot(Aug$Solar.R, xlab = "August", ylab = "Solar Radiation")
+boxplot(Aug$Wind, xlab = "August", ylab = "Wind")
+boxplot(Aug$Temp, xlab = "August", ylab = "Temperature")
+
+Sep <- subset(airquality, Month==9, na.rm=TRUE)
+boxplot(Sep$Ozone, xlab = "September", ylab = "Ozone")
+boxplot(Sep$Solar.R, xlab = "September", ylab = "Solar Radiation")
+boxplot(Sep$Wind, xlab = "September", ylab = "Wind")
+boxplot(Sep$Temp, xlab = "September", ylab = "Temperature")
+
+```
+
+### b. Scatterplots
+
+Simply examining the plots below, I saw that Temperature may not have a strong association with Solar Radiation; however, I would recommend considering confounding variables before making a final judgment. Then, I observed that temperature may have a positive association with Ozone, as the amount of Ozone
+
+```{r}
+plot(airquality$Temp, airquality$Solar.R, xlab = "Temperature", ylab = "Solar Radiation")
+plot(airquality$Temp, airquality$Ozone, xlab = "Temperature", ylab = "Ozone")
+```
+
+### c. Defining and using logical vectors in a dataset
+
+Below listed is the subset of the dataset which includes days for which all four quantities were higher than the average for that quantity.
+
+```{r}
+airquality$smoggy <- airquality$Ozone > mean(airquality$Ozone, na.rm=TRUE)
+airquality$windy <- airquality$Wind > mean(airquality$Wind, na.rm=TRUE)
+airquality$sunny <- airquality$Solar.R > mean(airquality$Solar.R, na.rm=TRUE)
+airquality$hot <- airquality$Temp > mean(airquality$Temp, na.rm=TRUE)
+
+airquality$allfour <- (airquality$smoggy & airquality$windy & airquality$sunny & airquality$hot) == TRUE
+
+dates <- subset(airquality, airquality$allfour == TRUE); dates
+```
+
+### d. Using the chi-square test
+
+```{r}
+tbl <- table(airquality$smoggy, airquality$windy)
+Expected <- outer(rowSums(tbl), colSums(tbl))/sum(tbl); Expected
+chisq.test(airquality$smoggy, airquality$windy)
+```
+The Ozone and Windiness factor does not seem to have any chance ($4.29\times 10^{-6}$) to arise by chance. Perhaps they are independent?
+
+```{r}
+tbl <- table(airquality$sunny, airquality$hot)
+Expected <- outer(rowSums(tbl), colSums(tbl))/sum(tbl); Expected
+chisq.test(airquality$sunny, airquality$hot)
+```
+
+This had one of the higher chances of arising by chance (2.408%).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
